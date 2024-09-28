@@ -149,7 +149,7 @@ class _GroupManagementScreenState extends State<GroupManagementScreen> {
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Видалити', style: TextStyle(color: Colors.red)),
+            child: const Text('Видалити', style: TextStyle(color: Colors.redAccent)),
           ),
         ],
       ),
@@ -168,7 +168,7 @@ class _GroupManagementScreenState extends State<GroupManagementScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    var colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
       appBar: AppBar(
@@ -207,11 +207,12 @@ class _GroupManagementScreenState extends State<GroupManagementScreen> {
                 title: RichText(
                   text: TextSpan(
                     text: group.name,
-                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: colorScheme.onSurface),
                     children: [
                       TextSpan(
                         text: ' (${users.length})',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal, color: Colors.grey[600]),
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.normal, color: colorScheme.onSurface.withOpacity(0.6)),
                       ),
                     ],
                   ),
@@ -235,25 +236,33 @@ class _GroupManagementScreenState extends State<GroupManagementScreen> {
                   var healthIndex = calculateHealthIndex(user.healthData);
                   return ListTile(
                     leading: CircleAvatar(
-                      backgroundColor: Colors.grey[300],
-                      child: Icon(Icons.person, color: Colors.grey[700]),
+                      backgroundColor: colorScheme.surfaceContainerHighest,
+                      child: Icon(Icons.person, color: colorScheme.onSurfaceVariant),
                     ),
                     title: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text('${user.firstName} ${user.lastName}'),
-                        Text(
-                          healthIndex.index.toStringAsFixed(2),
-                          style: TextStyle(
-                              color: healthIndex.healthIndexLevelResult.color,
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                          decoration: BoxDecoration(
+                            color: healthIndex.healthIndexLevelResult.color,
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                          child: Text(
+                            healthIndex.index.toStringAsFixed(2),
+                            style: TextStyle(
+                              color: colorScheme.onPrimary,
                               fontWeight: FontWeight.bold,
-                              shadows: const [
+                              shadows: [
                                 Shadow(
-                                  offset: Offset(0, 1),
+                                  offset: const Offset(0, 1),
                                   blurRadius: 2,
-                                  color: Colors.black26,
+                                  color: colorScheme.onSurfaceVariant.withOpacity(0.6),
                                 ),
-                              ]),
+                              ],
+                            ),
+                          ),
                         ),
                       ],
                     ),
