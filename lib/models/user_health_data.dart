@@ -3,8 +3,8 @@ import 'health_data.dart';
 class UserHealthData {
   int? id;
   int? groupId;
-  final String firstName;
-  final String lastName;
+  String firstName;
+  String lastName;
   final HealthData healthData;
   final double healthIndex;
 

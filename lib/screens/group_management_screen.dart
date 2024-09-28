@@ -168,6 +168,100 @@ class _GroupManagementScreenState extends State<GroupManagementScreen> {
     }
   }
 
+  void _editUser(UserHealthData user) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        final firstNameController = TextEditingController(text: user.firstName);
+        final lastNameController = TextEditingController(text: user.lastName);
+        Group? selectedGroup = _groups.firstWhere((group) => group.id == user.groupId, orElse: () => _groups.first);
+
+        return AlertDialog(
+          title: const Text('Редагувати користувача'), // 'Edit User'
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: firstNameController,
+                  decoration: const InputDecoration(labelText: 'Ім\'я'), // 'First Name'
+                ),
+                TextField(
+                  controller: lastNameController,
+                  decoration: const InputDecoration(labelText: 'Прізвище'), // 'Last Name'
+                ),
+                DropdownButtonFormField<Group>(
+                  value: selectedGroup,
+                  items: _groups.map((group) {
+                    return DropdownMenuItem<Group>(
+                      value: group,
+                      child: Text(group.name),
+                    );
+                  }).toList(),
+                  onChanged: (group) {
+                    selectedGroup = group;
+                  },
+                  decoration: const InputDecoration(
+                    labelText: 'Група', // 'Group'
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Відміна'), // 'Cancel'
+            ),
+            TextButton(
+              onPressed: () async {
+                final firstName = firstNameController.text.trim();
+                final lastName = lastNameController.text.trim();
+                if (firstName.isNotEmpty && lastName.isNotEmpty) {
+                  user.firstName = firstName;
+                  user.lastName = lastName;
+                  user.groupId = selectedGroup?.id;
+                  await _usersRepo.updateRecord(user);
+                  await _loadGroupsAndUsers();
+                  if (mounted) {
+                    Navigator.of(context).pop();
+                  }
+                }
+              },
+              child: const Text('Зберегти'), // 'Save'
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _deleteUser(UserHealthData user) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Підтвердіть видалення'), // 'Confirm Deletion'
+        content: Text(
+            'Ви впевнені, що хочете видалити користувача "${user.firstName} ${user.lastName}"?'), // 'Are you sure you want to delete the user "FirstName LastName"?'
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Відміна'), // 'Cancel'
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Видалити', style: TextStyle(color: Colors.redAccent)), // 'Delete'
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      await _usersRepo.softDeleteRecord(user.id!);
+      await _loadGroupsAndUsers();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     var colorScheme = Theme.of(context).colorScheme;
@@ -231,19 +325,26 @@ class _GroupManagementScreenState extends State<GroupManagementScreen> {
                         ? Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              IconButton(
-                                icon: Icon(Icons.edit, color: colorScheme.primary),
-                                onPressed: () => _editGroup(group),
+                              Tooltip(
+                                message: 'Редагувати групу', // 'Edit Group'
+                                child: IconButton(
+                                  icon: Icon(Icons.edit, color: colorScheme.primary),
+                                  onPressed: () => _editGroup(group),
+                                ),
                               ),
-                              IconButton(
-                                icon: const Icon(Icons.delete, color: Colors.redAccent),
-                                onPressed: () => _deleteGroup(group),
+                              Tooltip(
+                                message: 'Видалити групу', // 'Delete Group'
+                                child: IconButton(
+                                  icon: const Icon(Icons.delete, color: Colors.redAccent),
+                                  onPressed: () => _deleteGroup(group),
+                                ),
                               ),
                             ],
                           )
                         : const SizedBox.shrink(),
                   ],
                 ),
+                // Users in each group
                 children: users.map((user) {
                   var healthIndex = calculateHealthIndex(user.healthData);
                   return ListTile(
@@ -276,6 +377,25 @@ class _GroupManagementScreenState extends State<GroupManagementScreen> {
                                 ),
                               ],
                             ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Tooltip(
+                          message: 'Редагувати користувача', // 'Edit User'
+                          child: IconButton(
+                            icon: Icon(Icons.edit, color: colorScheme.primary),
+                            onPressed: () => _editUser(user),
+                          ),
+                        ),
+                        Tooltip(
+                          message: 'Видалити користувача', // 'Delete User'
+                          child: IconButton(
+                            icon: const Icon(Icons.delete, color: Colors.redAccent),
+                            onPressed: () => _deleteUser(user),
                           ),
                         ),
                       ],
