@@ -106,7 +106,8 @@ class _InputScreenState extends State<InputScreen> {
     final groups = await _groupRepo.fetchGroups();
     setState(() {
       _groups = groups;
-      _selectedGroup = groups.firstWhere((group) => group.name == GroupRepo.defaultGroupName, orElse: () => groups.first);
+      _selectedGroup =
+          groups.firstWhere((group) => group.name == GroupRepo.defaultGroupName, orElse: () => groups.first);
     });
   }
 
@@ -352,15 +353,33 @@ class _InputScreenState extends State<InputScreen> {
                           ),
                         ),
                         const SizedBox(height: 8),
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: TextButton(
-                            onPressed: _navigateToGroupManagement,
-                            child: const Text('Управління групами'),
-                          ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: CheckboxListTile(
+                                title: const Text('Зберегти дані'),
+                                value: _saveData,
+                                onChanged: (bool? value) {
+                                  setState(() {
+                                    _saveData = value ?? false;
+                                  });
+                                },
+                                controlAffinity: ListTileControlAffinity.leading,
+                              ),
+                            ),
+                            Expanded(
+                              child: Align(
+                                alignment: Alignment.centerRight,
+                                child: TextButton(
+                                  onPressed: _navigateToGroupManagement,
+                                  child: const Text('Управління групами'),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                         const SizedBox(height: 16),
-
                         // Arrange numerical fields in a grid
                         LayoutBuilder(
                           builder: (context, constraints) {
@@ -434,20 +453,9 @@ class _InputScreenState extends State<InputScreen> {
                           },
                         ),
                         const SizedBox(height: 24),
-
-                        // Кнопки внизу форми
+                        // Buttons at the bottom of the form
                         Row(
                           children: [
-                            // CheckboxListTile(
-                            //   title: const Text('Зберегти дані'),
-                            //   value: _saveData,
-                            //   onChanged: (bool? value) {
-                            //     setState(() {
-                            //       _saveData = value ?? false;
-                            //     });
-                            //   },
-                            //   controlAffinity: ListTileControlAffinity.leading,
-                            // ),
                             // Кнопка "Розрахувати"
                             Expanded(
                               child: ElevatedButton.icon(
