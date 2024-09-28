@@ -204,34 +204,41 @@ class _GroupManagementScreenState extends State<GroupManagementScreen> {
                   backgroundColor: colorScheme.primary.withOpacity(0.2),
                   child: Icon(Icons.group, color: colorScheme.primary),
                 ),
-                title: RichText(
-                  text: TextSpan(
-                    text: group.name,
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: colorScheme.onSurface),
-                    children: [
-                      TextSpan(
-                        text: ' (${users.length})',
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.normal, color: colorScheme.onSurface.withOpacity(0.6)),
-                      ),
-                    ],
-                  ),
-                ),
-                trailing: group.name != GroupRepo.defaultGroupName
-                    ? Row(
-                        mainAxisSize: MainAxisSize.min,
+                title: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    RichText(
+                      text: TextSpan(
+                        text: group.name,
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: colorScheme.onSurface),
                         children: [
-                          IconButton(
-                            icon: Icon(Icons.edit, color: colorScheme.primary),
-                            onPressed: () => _editGroup(group),
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.delete, color: Colors.redAccent),
-                            onPressed: () => _deleteGroup(group),
+                          TextSpan(
+                            text: ' (${users.length})',
+                            style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.normal,
+                                color: colorScheme.onSurface.withOpacity(0.6)),
                           ),
                         ],
-                      )
-                    : null,
+                      ),
+                    ),
+                    group.name != GroupRepo.defaultGroupName
+                        ? Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: Icon(Icons.edit, color: colorScheme.primary),
+                                onPressed: () => _editGroup(group),
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.delete, color: Colors.redAccent),
+                                onPressed: () => _deleteGroup(group),
+                              ),
+                            ],
+                          )
+                        : const SizedBox.shrink()
+                  ],
+                ),
                 children: users.map((user) {
                   var healthIndex = calculateHealthIndex(user.healthData);
                   return ListTile(
