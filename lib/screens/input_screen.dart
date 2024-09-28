@@ -176,10 +176,12 @@ class _InputScreenState extends State<InputScreen> {
     try {
       await _usersRepo.insertRecord(userHealthData);
 
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Дані успішно збережено')),
       );
     } catch (e) {
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Помилка збереження: ${e.toString()}')),
       );

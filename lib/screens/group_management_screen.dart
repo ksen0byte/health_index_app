@@ -18,6 +18,7 @@ class GroupManagementScreen extends StatefulWidget {
 class _GroupManagementScreenState extends State<GroupManagementScreen> {
   final UserHealthDataRepo _usersRepo = UserHealthDataRepo();
   final GroupRepo _groupRepo = GroupRepo();
+
   List<Group> _groups = [];
   Map<int, List<UserHealthData>> _groupedUsers = {};
 
@@ -27,13 +28,7 @@ class _GroupManagementScreenState extends State<GroupManagementScreen> {
     _loadGroupsAndUsers();
   }
 
-  Future<void> _loadGroups() async {
-    final groups = await _groupRepo.fetchGroups();
-    setState(() {
-      _groups = groups;
-    });
-  }
-
+  /// Loads both groups and users, grouping users by their group IDs.
   Future<void> _loadGroupsAndUsers() async {
     final groups = await _groupRepo.fetchGroups();
     final users = await _usersRepo.fetchRecords();
@@ -60,6 +55,7 @@ class _GroupManagementScreenState extends State<GroupManagementScreen> {
     });
   }
 
+  /// Navigates to the result screen to display detailed health index information.
   void _viewUserResult(HealthIndex healthIndex) {
     Navigator.push(
       context,
@@ -69,32 +65,34 @@ class _GroupManagementScreenState extends State<GroupManagementScreen> {
     );
   }
 
+  /// Displays a dialog to add a new group.
   void _addGroup() {
     showDialog(
       context: context,
       builder: (context) {
         final nameController = TextEditingController();
         return AlertDialog(
-          title: const Text('Додати групу'),
+          title: const Text('Додати групу'), // 'Add Group'
           content: TextField(
             controller: nameController,
-            decoration: const InputDecoration(labelText: 'Назва групи'),
+            decoration: const InputDecoration(labelText: 'Назва групи'), // 'Group Name'
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Відміна'),
+              child: const Text('Відміна'), // 'Cancel'
             ),
             TextButton(
               onPressed: () async {
                 final name = nameController.text.trim();
                 if (name.isNotEmpty) {
                   await _groupRepo.insertGroup(Group(name: name));
-                  await _loadGroups();
-                  Navigator.pop(context);
+                  await _loadGroupsAndUsers();
+                  // ignore: use_build_context_synchronously
+                  Navigator.of(context).pop();
                 }
               },
-              child: const Text('Додати'),
+              child: const Text('Додати'), // 'Add'
             ),
           ],
         );
@@ -102,32 +100,34 @@ class _GroupManagementScreenState extends State<GroupManagementScreen> {
     );
   }
 
+  /// Displays a dialog to edit an existing group's name.
   void _editGroup(Group group) {
     showDialog(
       context: context,
       builder: (context) {
         final nameController = TextEditingController(text: group.name);
         return AlertDialog(
-          title: const Text('Редагувати групу'),
+          title: const Text('Редагувати групу'), // 'Edit Group'
           content: TextField(
             controller: nameController,
-            decoration: const InputDecoration(labelText: 'Назва групи'),
+            decoration: const InputDecoration(labelText: 'Назва групи'), // 'Group Name'
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Відміна'),
+              child: const Text('Відміна'), // 'Cancel'
             ),
             TextButton(
               onPressed: () async {
                 final name = nameController.text.trim();
                 if (name.isNotEmpty) {
                   await _groupRepo.updateGroup(Group(id: group.id, name: name));
-                  await _loadGroups();
-                  Navigator.pop(context);
+                  await _loadGroupsAndUsers();
+                  // ignore: use_build_context_synchronously
+                  Navigator.of(context).pop();
                 }
               },
-              child: const Text('Зберегти'),
+              child: const Text('Зберегти'), // 'Save'
             ),
           ],
         );
@@ -135,21 +135,23 @@ class _GroupManagementScreenState extends State<GroupManagementScreen> {
     );
   }
 
+  /// Deletes a group after confirmation, transferring its users to the default group.
   void _deleteGroup(Group group) async {
     // Confirmation dialog
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Підтвердіть видалення'),
-        content: Text('Ви впевнені, що хочете видалити групу "${group.name}"?'),
+        title: const Text('Підтвердіть видалення'), // 'Confirm Deletion'
+        content: Text(
+            'Ви впевнені, що хочете видалити групу "${group.name}"?'), // 'Are you sure you want to delete the group "${group.name}"?'
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Відміна'),
+            child: const Text('Відміна'), // 'Cancel'
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Видалити', style: TextStyle(color: Colors.redAccent)),
+            child: const Text('Видалити', style: TextStyle(color: Colors.redAccent)), // 'Delete'
           ),
         ],
       ),
@@ -162,7 +164,7 @@ class _GroupManagementScreenState extends State<GroupManagementScreen> {
 
       // Delete the group
       await _groupRepo.deleteGroup(group.id!);
-      await _loadGroups();
+      await _loadGroupsAndUsers();
     }
   }
 
@@ -181,7 +183,7 @@ class _GroupManagementScreenState extends State<GroupManagementScreen> {
             ),
             const SizedBox(width: 8),
             Text(
-              'Управління групами',
+              'Управління групами', // 'Group Management'
               style: TextStyle(
                 color: colorScheme.onPrimary,
               ),
@@ -207,6 +209,7 @@ class _GroupManagementScreenState extends State<GroupManagementScreen> {
                 title: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
+                    // Group name with user count
                     RichText(
                       text: TextSpan(
                         text: group.name,
@@ -215,13 +218,15 @@ class _GroupManagementScreenState extends State<GroupManagementScreen> {
                           TextSpan(
                             text: ' (${users.length})',
                             style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.normal,
-                                color: colorScheme.onSurface.withOpacity(0.6)),
+                              fontSize: 16,
+                              fontWeight: FontWeight.normal,
+                              color: colorScheme.onSurface.withOpacity(0.6),
+                            ),
                           ),
                         ],
                       ),
                     ),
+                    // Edit/Delete buttons for groups (except default group)
                     group.name != GroupRepo.defaultGroupName
                         ? Row(
                             mainAxisSize: MainAxisSize.min,
@@ -236,7 +241,7 @@ class _GroupManagementScreenState extends State<GroupManagementScreen> {
                               ),
                             ],
                           )
-                        : const SizedBox.shrink()
+                        : const SizedBox.shrink(),
                   ],
                 ),
                 children: users.map((user) {
@@ -249,7 +254,9 @@ class _GroupManagementScreenState extends State<GroupManagementScreen> {
                     title: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
+                        // User's full name
                         Text('${user.firstName} ${user.lastName}'),
+                        // Health index display
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
                           decoration: BoxDecoration(

@@ -11,10 +11,6 @@ void main() {
     sqfliteFfiInit();
     databaseFactory = databaseFactoryFfi;
   }
-
-  print('Starting..');
-  print('Finishing..');
-
   runApp(const HealthIndexApp());
 }
 
