@@ -350,25 +350,29 @@ class _GroupManagementScreenState extends State<GroupManagementScreen> {
                   return ListTile(
                     leading: CircleAvatar(
                       backgroundColor: colorScheme.surfaceContainerHighest,
-                      child: Icon(Icons.person, color: colorScheme.onSurfaceVariant),
+                      child: Icon(Icons.person, color: colorScheme.onSurface.withOpacity(0.7), size: 20),
                     ),
                     title: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        // User's full name
-                        Text('${user.firstName} ${user.lastName}'),
-                        // Health index display
+                        // User's full name with reduced font size
+                        Text(
+                          '${user.firstName} ${user.lastName}',
+                          style: TextStyle(fontSize: 16, color: colorScheme.onSurface.withOpacity(0.9)),
+                        ),
+                        // Health index display inline with name
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                          padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 2.0),
                           decoration: BoxDecoration(
-                            color: healthIndex.healthIndexLevelResult.color,
-                            borderRadius: BorderRadius.circular(8.0),
+                            color: healthIndex.healthIndexLevelResult.color.withOpacity(0.8),
+                            borderRadius: BorderRadius.circular(6.0),
                           ),
                           child: Text(
                             healthIndex.index.toStringAsFixed(2),
                             style: TextStyle(
                               color: colorScheme.onPrimary,
                               fontWeight: FontWeight.bold,
+                              fontSize: 14,
                               shadows: [
                                 Shadow(
                                   offset: const Offset(0, 1),
@@ -381,26 +385,32 @@ class _GroupManagementScreenState extends State<GroupManagementScreen> {
                         ),
                       ],
                     ),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Tooltip(
-                          message: 'Редагувати користувача', // 'Edit User'
-                          child: IconButton(
-                            icon: Icon(Icons.edit, color: colorScheme.primary),
-                            onPressed: () => _editUser(user),
+                    trailing: PopupMenuButton<String>(
+                      onSelected: (String value) {
+                        if (value == 'edit') {
+                          _editUser(user);
+                        } else if (value == 'delete') {
+                          _deleteUser(user);
+                        }
+                      },
+                      itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                        PopupMenuItem<String>(
+                          value: 'edit',
+                          child: ListTile(
+                            leading: Icon(Icons.edit, color: colorScheme.primary),
+                            title: const Text('Редагувати'), // 'Edit'
                           ),
                         ),
-                        Tooltip(
-                          message: 'Видалити користувача', // 'Delete User'
-                          child: IconButton(
-                            icon: const Icon(Icons.delete, color: Colors.redAccent),
-                            onPressed: () => _deleteUser(user),
+                        const PopupMenuItem<String>(
+                          value: 'delete',
+                          child: ListTile(
+                            leading: Icon(Icons.delete, color: Colors.redAccent),
+                            title: Text('Видалити'), // 'Delete'
                           ),
                         ),
                       ],
                     ),
-                    contentPadding: const EdgeInsets.only(left: 40.0, right: 16.0),
+                    contentPadding: const EdgeInsets.only(left: 56.0, right: 8.0),
                     onTap: () => _viewUserResult(healthIndex),
                   );
                 }).toList(),
