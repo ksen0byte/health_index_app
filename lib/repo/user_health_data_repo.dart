@@ -21,6 +21,7 @@ class UserHealthDataRepo {
       diastolic_BP INTEGER NOT NULL,
       activity_level INTEGER NOT NULL,
       health_index REAL NOT NULL,
+      recorded_at TEXT NOT NULL,
       is_deleted INTEGER NOT NULL DEFAULT 0,
       FOREIGN KEY (group_id) REFERENCES groups(id)
     )
@@ -56,6 +57,7 @@ class UserHealthDataRepo {
           activityLevel: row['activity_level'],
         ),
         healthIndex: row['health_index'],
+        recordedAt: DateTime.parse(row['recorded_at']), // Parse ISO 8601 string
       );
     }).toList();
   }
@@ -135,6 +137,7 @@ class UserHealthDataRepo {
           activityLevel: row['activity_level'],
         ),
         healthIndex: row['health_index'],
+        recordedAt: DateTime.parse(row['recorded_at']), // Parse ISO 8601 string
       );
     }).toList();
   }

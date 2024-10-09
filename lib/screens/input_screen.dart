@@ -104,15 +104,19 @@ class _InputScreenState extends State<InputScreen> {
   @override
   void initState() {
     super.initState();
-    _loadGroups();
+    _loadGroups(); // Load groups and preselect a default
   }
 
   Future<void> _loadGroups() async {
     final groups = await _groupRepo.fetchGroups();
     setState(() {
       _groups = groups;
-      _selectedGroup =
-          groups.firstWhere((group) => group.name == GroupRepo.defaultGroupName, orElse: () => groups.first);
+      _selectedGroup = _selectedGroup != null && _groups.contains(_selectedGroup)
+          ? _selectedGroup // Keep the previously selected group if it's still valid
+          : groups.firstWhere(
+              (group) => group.name == GroupRepo.defaultGroupName,
+              orElse: () => groups.first,
+            );
     });
   }
 
@@ -161,6 +165,7 @@ class _InputScreenState extends State<InputScreen> {
             healthData: data,
             healthIndex: healthIndex.index,
             groupId: _selectedGroup?.id,
+            recordedAt: DateTime.now(),
           );
           _save(userHealthData);
         }
@@ -191,7 +196,10 @@ class _InputScreenState extends State<InputScreen> {
     } catch (e) {
       // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Помилка збереження: ${e.toString()}')),
+        SnackBar(
+          content: Text('Помилка збереження: ${e.toString()}'),
+          duration: const Duration(minutes: 10),
+        ),
       );
     }
   }
@@ -437,7 +445,7 @@ class _InputScreenState extends State<InputScreen> {
                                 ),
                               ),
                             ];
-                            
+
                             return Wrap(
                               spacing: 16,
                               runSpacing: 16,

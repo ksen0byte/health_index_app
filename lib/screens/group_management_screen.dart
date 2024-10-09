@@ -11,6 +11,8 @@ import '../repo/user_health_data_repo.dart';
 import '../utils/calculator.dart';
 import '../utils/csv_generator.dart';
 import 'result_screen.dart';
+import 'package:intl/intl.dart';
+import 'package:collection/collection.dart';
 
 class GroupManagementScreen extends StatefulWidget {
   const GroupManagementScreen({super.key});
@@ -427,8 +429,21 @@ class _GroupManagementScreenState extends State<GroupManagementScreen> {
                   ],
                 ),
                 // Users in each group
-                children: users.map((user) {
+                children: users.sorted((a, b) {
+                  int lastNameComparison = a.lastName.compareTo(b.lastName);
+                  if (lastNameComparison != 0) return lastNameComparison;
+
+                  int firstNameComparison = a.firstName.compareTo(b.firstName);
+                  if (firstNameComparison != 0) return firstNameComparison;
+
+                  // For descending order of recordedAt, reverse the comparison
+                  return b.recordedAt.compareTo(a.recordedAt);
+                }).map((user) {
                   var healthIndex = calculateHealthIndex(user.healthData);
+
+                  // Format the recorded date
+                  String formattedDate = DateFormat('yyyy-MM-dd HH:mm').format(user.recordedAt);
+
                   return ListTile(
                     leading: CircleAvatar(
                       backgroundColor: colorScheme.surfaceContainerHighest,
@@ -437,12 +452,12 @@ class _GroupManagementScreenState extends State<GroupManagementScreen> {
                     title: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        // User's full name with reduced font size
+                        // User's full name
                         Text(
-                          '${user.firstName} ${user.lastName}',
+                          '${user.lastName} ${user.firstName}',
                           style: TextStyle(fontSize: 16, color: colorScheme.onSurface.withOpacity(0.9)),
                         ),
-                        // Health index display inline with name
+                        // Health index display
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 2.0),
                           decoration: BoxDecoration(
@@ -466,6 +481,13 @@ class _GroupManagementScreenState extends State<GroupManagementScreen> {
                           ),
                         ),
                       ],
+                    ),
+                    subtitle: Text(
+                      'Recorded at: $formattedDate | '
+                      '${user.healthData.age} років, ${user.healthData.height} см, ${user.healthData.weight} кг, '
+                      '${user.healthData.heartRate} уд/хв, ${user.healthData.systolicBP}/${user.healthData.diastolicBP} мм.рт.ст., '
+                      'РРА: ${user.healthData.activityLevel} балів',
+                      style: TextStyle(fontSize: 12, color: colorScheme.onSurface.withOpacity(0.6)),
                     ),
                     trailing: PopupMenuButton<String>(
                       onSelected: (String value) {

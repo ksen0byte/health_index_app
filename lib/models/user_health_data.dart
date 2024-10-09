@@ -7,12 +7,14 @@ class UserHealthData {
   String lastName;
   final HealthData healthData;
   final double healthIndex;
+  final DateTime recordedAt;
 
   UserHealthData({
     required this.firstName,
     required this.lastName,
     required this.healthData,
     required this.healthIndex,
+    required this.recordedAt,
     this.groupId,
     this.id,
   });
@@ -31,11 +33,12 @@ class UserHealthData {
       'diastolic_BP': healthData.diastolicBP,
       'activity_level': healthData.activityLevel,
       'health_index': healthIndex,
+      'recorded_at': recordedAt.toIso8601String(),
     };
   }
 
   @override
   String toString() {
-    return 'UserHealthData{id: $id, groupId: $groupId, firstName: $firstName, lastName: $lastName, healthIndex: $healthIndex, healthData: $healthData}';
+    return 'UserHealthData{id: $id, groupId: $groupId, firstName: $firstName, lastName: $lastName, healthIndex: $healthIndex, recordedAt: $recordedAt, healthData: $healthData}';
   }
 }
