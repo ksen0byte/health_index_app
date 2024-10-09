@@ -59,10 +59,10 @@ class ResultScreen extends StatelessWidget {
         Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Іконка з фоном
+            // Compact icon with background
             Container(
-              width: 48,
-              height: 48,
+              width: 36,
+              height: 36,
               decoration: BoxDecoration(
                 color: color.withOpacity(0.1),
                 shape: BoxShape.circle,
@@ -70,15 +70,15 @@ class ResultScreen extends StatelessWidget {
               child: Icon(
                 icon,
                 color: color,
-                size: 28,
+                size: 20,
               ),
             ),
-            const SizedBox(width: 16),
+            const SizedBox(width: 8),
             Expanded(
               child: Text(
                 title,
                 style: const TextStyle(
-                  fontSize: 20,
+                  fontSize: 16,
                   fontWeight: FontWeight.bold,
                   color: Colors.black87,
                 ),
@@ -87,18 +87,26 @@ class ResultScreen extends StatelessWidget {
           ],
         ),
         if (value != null && minValue != null && maxValue != null) ...[
-          const SizedBox(height: 16),
-          _buildLinearGauge(value: value, minValue: minValue, maxValue: maxValue, inverted: gaugeInverted),
+          const SizedBox(height: 8),
+          SizedBox(
+            height: 40, // Reduce the height of the gauge
+            child: _buildLinearGauge(
+              value: value,
+              minValue: minValue,
+              maxValue: maxValue,
+              inverted: gaugeInverted,
+            ),
+          ),
         ],
-        const SizedBox(height: 8),
+        const SizedBox(height: 4),
         Text(
           valueText,
           style: const TextStyle(
-            fontSize: 18,
+            fontSize: 14,
             color: Colors.black87,
           ),
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: 16),
       ],
     );
   }

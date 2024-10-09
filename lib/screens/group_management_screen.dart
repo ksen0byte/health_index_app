@@ -483,7 +483,7 @@ class _GroupManagementScreenState extends State<GroupManagementScreen> {
                       ],
                     ),
                     subtitle: Text(
-                      'Recorded at: $formattedDate | '
+                      '$formattedDate | '
                       '${user.healthData.age} років, ${user.healthData.height} см, ${user.healthData.weight} кг, '
                       '${user.healthData.heartRate} уд/хв, ${user.healthData.systolicBP}/${user.healthData.diastolicBP} мм.рт.ст., '
                       'РРА: ${user.healthData.activityLevel} балів',

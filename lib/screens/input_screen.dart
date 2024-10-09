@@ -73,6 +73,9 @@ class _InputScreenState extends State<InputScreen> {
                 _systolicBPController.clear();
                 _diastolicBPController.clear();
                 _activityLevelController.clear();
+                _firstNameController.clear();
+                _lastNameController.clear();
+                _selectedGroup = _defaultGroup;
               },
             ),
           ],
@@ -98,6 +101,7 @@ class _InputScreenState extends State<InputScreen> {
   final UserHealthDataRepo _usersRepo = UserHealthDataRepo();
   final GroupRepo _groupRepo = GroupRepo();
   List<Group> _groups = [];
+  late Group _defaultGroup;
   Group? _selectedGroup;
   bool _saveData = false;
 
@@ -109,14 +113,16 @@ class _InputScreenState extends State<InputScreen> {
 
   Future<void> _loadGroups() async {
     final groups = await _groupRepo.fetchGroups();
+    var defaultGroup = groups.firstWhere(
+      (group) => group.name == GroupRepo.defaultGroupName,
+      orElse: () => groups.first,
+    );
     setState(() {
       _groups = groups;
+      _defaultGroup = defaultGroup;
       _selectedGroup = _selectedGroup != null && _groups.contains(_selectedGroup)
           ? _selectedGroup // Keep the previously selected group if it's still valid
-          : groups.firstWhere(
-              (group) => group.name == GroupRepo.defaultGroupName,
-              orElse: () => groups.first,
-            );
+          : defaultGroup;
     });
   }
 
