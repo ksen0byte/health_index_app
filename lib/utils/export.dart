@@ -1,40 +1,33 @@
-import 'package:csv/csv.dart';
-import 'package:health_index_app/models/user_health_data.dart';
+import 'dart:convert';
+import 'dart:typed_data';
 
-Future<String> generateUserDataCSV(List<UserHealthData> users) async {
-  List<List<dynamic>> rows = [];
+import 'package:file_selector/file_selector.dart';
+import 'package:path_provider/path_provider.dart';
 
-  // Add header
-  rows.add([
-    'id',
-    'firstName',
-    'lastName',
-    'groupId',
-    'age',
-    'height',
-    'weight',
-    'heartRate',
-    'systolicBP',
-    'diastolicBP',
-    'healthIndex',
-  ]);
+Future<FileSaveLocation?> chooseSaveLocation(String baseName) async {
+  padded(int num) => num.toString().padLeft(2, '0');
 
-  for (var user in users) {
-    rows.add([
-      user.id,
-      user.firstName,
-      user.lastName,
-      user.groupId,
-      user.healthData.age,
-      user.healthData.height,
-      user.healthData.weight,
-      user.healthData.heartRate,
-      user.healthData.systolicBP,
-      user.healthData.diastolicBP,
-      user.healthIndex,
-    ]);
+  var dateTime = DateTime.now();
+  String formattedDate =
+      "${padded(dateTime.day)}-${padded(dateTime.month)}-${dateTime.year}_${padded(dateTime.hour)}-${padded(dateTime.minute)}-${padded(dateTime.second)}";
+
+  final FileSaveLocation? fileSaveLocation = await getSaveLocation(
+    initialDirectory: (await getApplicationDocumentsDirectory()).path,
+    suggestedName: '${baseName}_$formattedDate.csv',
+  );
+  if (fileSaveLocation == null) {
+    // Operation was canceled by the user.
+    return Future.value(null);
   }
 
-  String csvData = const ListToCsvConverter().convert(rows);
-  return csvData;
+  return Future.value(fileSaveLocation);
+}
+
+Future<void> saveCsv(FileSaveLocation fileSaveLocation, String csvData) async {
+  final XFile textFile = XFile.fromData(
+    Uint8List.fromList(utf8.encode(csvData)),
+    mimeType: 'text/csv',
+  );
+
+  await textFile.saveTo(fileSaveLocation.path);
 }

@@ -1,18 +1,16 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:health_index_app/utils/export.dart';
+
 import '../models/group.dart';
 import '../models/health_index.dart';
 import '../models/user_health_data.dart';
 import '../repo/group_repo.dart';
 import '../repo/user_health_data_repo.dart';
 import '../utils/calculator.dart';
-import '../utils/export.dart';
+import '../utils/csv_generator.dart';
 import 'result_screen.dart';
-import 'package:file_selector/file_selector.dart';
 
 class GroupManagementScreen extends StatefulWidget {
   const GroupManagementScreen({super.key});
@@ -143,25 +141,18 @@ class _GroupManagementScreenState extends State<GroupManagementScreen> {
   // Export all data
   void _exportAllData() async {
     try {
-      String csvData = await generateUserDataCSV(await UserHealthDataRepo().fetchRecordsByGroups([]));
-      final FileSaveLocation? fileSaveLocation = await getSaveLocation(
-        initialDirectory: (await getApplicationDocumentsDirectory()).path,
-        suggestedName: 'all_data_${DateTime.now().millisecondsSinceEpoch}.csv',
-      );
-      if (fileSaveLocation == null) {
+      var saveLocation = await chooseSaveLocation("all_data");
+      if (saveLocation == null) {
         // Operation was canceled by the user.
         return;
       }
 
-      final XFile textFile = XFile.fromData(
-        Uint8List.fromList(csvData.codeUnits),
-        mimeType: 'text/csv',
-      );
+      String csvData = await generateUserDataCSV(await _usersRepo.fetchRecordsByGroups([]));
 
-      await textFile.saveTo(fileSaveLocation.path);
+      await saveCsv(saveLocation, csvData);
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Дані успішно експортовано до ${fileSaveLocation.path}')),
+        SnackBar(content: Text('Дані успішно експортовано до ${saveLocation.path}')),
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -173,27 +164,18 @@ class _GroupManagementScreenState extends State<GroupManagementScreen> {
   // Export data for a specific group
   void _exportGroupData(Group group) async {
     try {
-      String sanitizedGroupName = group.name.replaceAll(' ', '_');
-
-      String csvData = await generateUserDataCSV(await UserHealthDataRepo().fetchRecordsByGroups([group.id!]));
-      final FileSaveLocation? fileSaveLocation = await getSaveLocation(
-        initialDirectory: (await getApplicationDocumentsDirectory()).path,
-        suggestedName: 'group_${sanitizedGroupName}_${DateTime.now().millisecondsSinceEpoch}.csv',
-      );
-      if (fileSaveLocation == null) {
+      var saveLocation = await chooseSaveLocation("group_${group.name.replaceAll(' ', '_')}");
+      if (saveLocation == null) {
         // Operation was canceled by the user.
         return;
       }
 
-      final XFile textFile = XFile.fromData(
-        Uint8List.fromList(csvData.codeUnits),
-        mimeType: 'text/csv',
-      );
+      String csvData = await generateUserDataCSV(await _usersRepo.fetchRecordsByGroups([group.id!]));
 
-      await textFile.saveTo(fileSaveLocation.path);
+      await saveCsv(saveLocation, csvData);
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Дані для групи "${group.name}" успішно експортовано до ${fileSaveLocation.path}')),
+        SnackBar(content: Text('Дані для групи "${group.name}" успішно експортовано до ${saveLocation.path}')),
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
