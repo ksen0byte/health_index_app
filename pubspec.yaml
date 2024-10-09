@@ -56,6 +56,14 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^4.0.0
   msix: ^3.16.8
+  flutter_launcher_icons: ^0.14.1
+
+flutter_icons:
+  windows:
+    generate: true
+    icon_size: 256
+    image_path: "assets/images/logo.png"
+  image_path: "assets/images/logo.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
