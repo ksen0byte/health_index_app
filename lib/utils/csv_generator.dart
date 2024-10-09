@@ -16,6 +16,7 @@ Future<String> generateUserDataCSV(List<UserHealthData> users) async {
     'heartRate',
     'systolicBP',
     'diastolicBP',
+    'activityLevel',
     'healthIndex',
   ]);
 
@@ -31,6 +32,7 @@ Future<String> generateUserDataCSV(List<UserHealthData> users) async {
       user.healthData.heartRate,
       user.healthData.systolicBP,
       user.healthData.diastolicBP,
+      user.healthData.activityLevel,
       user.healthIndex,
     ]);
   }

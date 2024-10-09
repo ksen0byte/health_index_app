@@ -5,6 +5,13 @@ String? validateName(String? value) {
   return null;
 }
 
+String? validateLastName(String? value) {
+  if (value == null || value.isEmpty) {
+    return 'Прізвище не може бути порожнім'; // 'Last Name cannot be empty'
+  }
+  return null;
+}
+
 String? validateAge(String? value) {
   if (value == null || value.isEmpty) {
     return 'Введіть вік'; // 'Please enter an age'
@@ -67,6 +74,17 @@ String? validateDiastolicBP(String? value) {
   final diastolicBP = int.tryParse(value);
   if (diastolicBP == null || diastolicBP <= 0 || diastolicBP < 60 || diastolicBP > 150) {
     return 'Діастолічний тиск повинен бути між 60 і 150 мм рт. ст.'; // 'Diastolic BP must be between 60 and 150 mmHg'
+  }
+  return null;
+}
+
+String? validateActivityLevel(String? value) {
+  if (value == null || value.isEmpty) {
+    return 'Введіть рівень рухової активності'; // 'Please enter activity level'
+  }
+  final diastolicBP = int.tryParse(value);
+  if (diastolicBP == null || diastolicBP <= 0 || diastolicBP < 1 || diastolicBP > 10) {
+    return 'Рівень рухової активності повинен бути між 1 та 10 балів'; // 'Activity level must be between 1 and 10 points'
   }
   return null;
 }

@@ -19,6 +19,7 @@ class UserHealthDataRepo {
       heart_rate INTEGER NOT NULL,
       systolic_BP INTEGER NOT NULL,
       diastolic_BP INTEGER NOT NULL,
+      activity_level INTEGER NOT NULL,
       health_index REAL NOT NULL,
       is_deleted INTEGER NOT NULL DEFAULT 0,
       FOREIGN KEY (group_id) REFERENCES groups(id)
@@ -52,6 +53,7 @@ class UserHealthDataRepo {
           heartRate: row['heart_rate'],
           systolicBP: row['systolic_BP'],
           diastolicBP: row['diastolic_BP'],
+          activityLevel: row['activity_level'],
         ),
         healthIndex: row['health_index'],
       );
@@ -130,6 +132,7 @@ class UserHealthDataRepo {
           heartRate: row['heart_rate'],
           systolicBP: row['systolic_BP'],
           diastolicBP: row['diastolic_BP'],
+          activityLevel: row['activity_level'],
         ),
         healthIndex: row['health_index'],
       );

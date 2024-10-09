@@ -29,6 +29,7 @@ class UserHealthData {
       'heart_rate': healthData.heartRate,
       'systolic_BP': healthData.systolicBP,
       'diastolic_BP': healthData.diastolicBP,
+      'activity_level': healthData.activityLevel,
       'health_index': healthIndex,
     };
   }

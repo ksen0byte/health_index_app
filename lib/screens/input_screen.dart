@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:health_index_app/repo/user_health_data_repo.dart';
-import 'package:health_index_app/utils/validator.dart';
+import 'package:flutter/services.dart';
 import '../models/group.dart';
 import '../models/health_data.dart';
 import '../models/user_health_data.dart';
 import '../repo/group_repo.dart';
+import '../repo/user_health_data_repo.dart';
 import '../utils/calculator.dart';
+import '../utils/validator.dart';
 import 'group_management_screen.dart';
 import 'result_screen.dart';
 
@@ -71,6 +72,7 @@ class _InputScreenState extends State<InputScreen> {
                 _heartRateController.clear();
                 _systolicBPController.clear();
                 _diastolicBPController.clear();
+                _activityLevelController.clear();
               },
             ),
           ],
@@ -88,6 +90,8 @@ class _InputScreenState extends State<InputScreen> {
   final _heartRateController = TextEditingController();
   final _systolicBPController = TextEditingController();
   final _diastolicBPController = TextEditingController();
+  final _activityLevelController = TextEditingController();
+
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
 
@@ -129,6 +133,7 @@ class _InputScreenState extends State<InputScreen> {
     _heartRateController.dispose();
     _systolicBPController.dispose();
     _diastolicBPController.dispose();
+    _activityLevelController.dispose();
     _firstNameController.dispose();
     _lastNameController.dispose();
     super.dispose();
@@ -144,6 +149,7 @@ class _InputScreenState extends State<InputScreen> {
           heartRate: int.parse(_heartRateController.text),
           systolicBP: int.parse(_systolicBPController.text),
           diastolicBP: int.parse(_diastolicBPController.text),
+          activityLevel: int.parse(_activityLevelController.text),
         );
 
         final healthIndex = calculateHealthIndex(data);
@@ -208,11 +214,12 @@ class _InputScreenState extends State<InputScreen> {
         fillColor: Colors.white,
       ),
       keyboardType: TextInputType.number,
+      inputFormatters: [
+        FilteringTextInputFormatter.digitsOnly, // Allow only numerical input
+      ],
       validator: validator,
     );
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -290,12 +297,7 @@ class _InputScreenState extends State<InputScreen> {
                             prefixIcon: Icon(Icons.person),
                             border: OutlineInputBorder(),
                           ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Введіть ім\'я';
-                            }
-                            return null;
-                          },
+                          validator: validateName,
                         ),
                         const SizedBox(height: 16),
                         TextFormField(
@@ -305,12 +307,7 @@ class _InputScreenState extends State<InputScreen> {
                             prefixIcon: Icon(Icons.person_outline),
                             border: OutlineInputBorder(),
                           ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Введіть прізвище';
-                            }
-                            return null;
-                          },
+                          validator: validateLastName,
                         ),
                         const SizedBox(height: 16),
                         // Group selection
@@ -364,72 +361,87 @@ class _InputScreenState extends State<InputScreen> {
                         // Arrange numerical fields in a grid
                         LayoutBuilder(
                           builder: (context, constraints) {
-                            final fieldWidth = (constraints.maxWidth - 48) / 3; // Adjust for padding and spacing
+                            double widthLimit = 200;
+                            int numOfColumns = 3;
+                            final fieldWidth =
+                                (constraints.maxWidth - 48) / numOfColumns; // Adjust for padding and spacing
+                            final List<Widget> fields = [
+                              SizedBox(
+                                width: fieldWidth > widthLimit ? fieldWidth : widthLimit,
+                                child: _buildCompactTextField(
+                                  controller: _ageController,
+                                  label: 'Вік',
+                                  hint: 'Введіть ваш вік (років)',
+                                  icon: Icons.cake,
+                                  validator: validateAge,
+                                ),
+                              ),
+                              SizedBox(
+                                width: fieldWidth > widthLimit ? fieldWidth : widthLimit,
+                                child: _buildCompactTextField(
+                                  controller: _heightController,
+                                  label: 'Зріст',
+                                  hint: 'Введіть ваш зріст (см)',
+                                  icon: Icons.height,
+                                  validator: validateHeight,
+                                ),
+                              ),
+                              SizedBox(
+                                width: fieldWidth > widthLimit ? fieldWidth : widthLimit,
+                                child: _buildCompactTextField(
+                                  controller: _weightController,
+                                  label: 'Вага',
+                                  hint: 'Введіть вашу вагу (кг)',
+                                  icon: Icons.monitor_weight,
+                                  validator: validateWeight,
+                                ),
+                              ),
+                              SizedBox(
+                                width: fieldWidth > widthLimit ? fieldWidth : widthLimit,
+                                child: _buildCompactTextField(
+                                  controller: _heartRateController,
+                                  label: 'ЧСС',
+                                  hint: 'Введіть ЧСС (уд/хв)',
+                                  icon: Icons.favorite,
+                                  validator: validateHeartRate,
+                                ),
+                              ),
+                              SizedBox(
+                                width: fieldWidth > widthLimit ? fieldWidth : widthLimit,
+                                child: _buildCompactTextField(
+                                  controller: _systolicBPController,
+                                  label: 'Систолічний АТ',
+                                  hint: 'Введіть систолічний АТ (мм рт. ст.)',
+                                  icon: Icons.arrow_upward,
+                                  validator: validateSystolicBP,
+                                ),
+                              ),
+                              SizedBox(
+                                width: fieldWidth > widthLimit ? fieldWidth : widthLimit,
+                                child: _buildCompactTextField(
+                                  controller: _diastolicBPController,
+                                  label: 'Діастолічний АТ',
+                                  hint: 'Введіть діастолічний АТ (мм рт. ст.)',
+                                  icon: Icons.arrow_downward,
+                                  validator: validateDiastolicBP,
+                                ),
+                              ),
+                              SizedBox(
+                                width: fieldWidth > widthLimit ? fieldWidth : widthLimit,
+                                child: _buildCompactTextField(
+                                  controller: _activityLevelController,
+                                  label: 'Рівень рухової активності',
+                                  hint: 'Введіть рівень рухової активності 1-10 (балів)',
+                                  icon: Icons.fitness_center,
+                                  validator: validateActivityLevel,
+                                ),
+                              ),
+                            ];
+                            
                             return Wrap(
                               spacing: 16,
                               runSpacing: 16,
-                              children: [
-                                SizedBox(
-                                  width: fieldWidth > 200 ? fieldWidth : 200,
-                                  child: _buildCompactTextField(
-                                    controller: _ageController,
-                                    label: 'Вік',
-                                    hint: 'Введіть ваш вік (років)',
-                                    icon: Icons.cake,
-                                    validator: validateAge,
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: fieldWidth > 200 ? fieldWidth : 200,
-                                  child: _buildCompactTextField(
-                                    controller: _heightController,
-                                    label: 'Зріст',
-                                    hint: 'Введіть ваш зріст (см)',
-                                    icon: Icons.height,
-                                    validator: validateHeight,
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: fieldWidth > 200 ? fieldWidth : 200,
-                                  child: _buildCompactTextField(
-                                    controller: _weightController,
-                                    label: 'Вага',
-                                    hint: 'Введіть вашу вагу (кг)',
-                                    icon: Icons.monitor_weight,
-                                    validator: validateWeight,
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: fieldWidth > 200 ? fieldWidth : 200,
-                                  child: _buildCompactTextField(
-                                    controller: _heartRateController,
-                                    label: 'ЧСС',
-                                    hint: 'Введіть ЧСС (уд/хв)',
-                                    icon: Icons.favorite,
-                                    validator: validateHeartRate,
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: fieldWidth > 200 ? fieldWidth : 200,
-                                  child: _buildCompactTextField(
-                                    controller: _systolicBPController,
-                                    label: 'Систолічний АТ',
-                                    hint: 'Введіть систолічний АТ (мм рт. ст.)',
-                                    icon: Icons.arrow_upward,
-                                    validator: validateSystolicBP,
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: fieldWidth > 200 ? fieldWidth : 200,
-                                  child: _buildCompactTextField(
-                                    controller: _diastolicBPController,
-                                    label: 'Діастолічний АТ',
-                                    hint: 'Введіть діастолічний АТ (мм рт. ст.)',
-                                    icon: Icons.arrow_downward,
-                                    validator: validateDiastolicBP,
-                                  ),
-                                ),
-                              ],
+                              children: fields,
                             );
                           },
                         ),

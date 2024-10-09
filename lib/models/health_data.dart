@@ -5,6 +5,7 @@ class HealthData {
   int heartRate;
   int systolicBP;
   int diastolicBP;
+  int activityLevel;
 
   HealthData({
     required this.age,
@@ -13,11 +14,12 @@ class HealthData {
     required this.heartRate,
     required this.systolicBP,
     required this.diastolicBP,
+    required this.activityLevel,
   });
 
   @override
   String toString() {
-    return 'HealthData(age: $age, height: $height, weight: $weight, heartRate: $heartRate, systolicBP: $systolicBP, diastolicBP: $diastolicBP)';
+    return 'HealthData(age: $age, height: $height, weight: $weight, heartRate: $heartRate, systolicBP: $systolicBP, diastolicBP: $diastolicBP, activityLevel: $activityLevel)';
   }
 }
 
