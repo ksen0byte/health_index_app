@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:health_index_app/repo/user_health_data_repo.dart';
+import 'package:health_index_app/utils/validator.dart';
 import '../models/group.dart';
 import '../models/health_data.dart';
 import '../models/user_health_data.dart';
@@ -211,27 +212,7 @@ class _InputScreenState extends State<InputScreen> {
     );
   }
 
-  String? _validatePositiveInteger(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Це поле обов\'язкове';
-    }
-    final intValue = int.tryParse(value);
-    if (intValue == null || intValue <= 0) {
-      return 'Введіть коректне число';
-    }
-    return null;
-  }
 
-  String? _validatePositiveNumber(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Це поле обов\'язкове';
-    }
-    final doubleValue = double.tryParse(value);
-    if (doubleValue == null || doubleValue <= 0) {
-      return 'Введіть коректне число';
-    }
-    return null;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -395,7 +376,7 @@ class _InputScreenState extends State<InputScreen> {
                                     label: 'Вік',
                                     hint: 'Введіть ваш вік (років)',
                                     icon: Icons.cake,
-                                    validator: _validatePositiveInteger,
+                                    validator: validateAge,
                                   ),
                                 ),
                                 SizedBox(
@@ -405,7 +386,7 @@ class _InputScreenState extends State<InputScreen> {
                                     label: 'Зріст',
                                     hint: 'Введіть ваш зріст (см)',
                                     icon: Icons.height,
-                                    validator: _validatePositiveNumber,
+                                    validator: validateHeight,
                                   ),
                                 ),
                                 SizedBox(
@@ -415,7 +396,7 @@ class _InputScreenState extends State<InputScreen> {
                                     label: 'Вага',
                                     hint: 'Введіть вашу вагу (кг)',
                                     icon: Icons.monitor_weight,
-                                    validator: _validatePositiveNumber,
+                                    validator: validateWeight,
                                   ),
                                 ),
                                 SizedBox(
@@ -425,7 +406,7 @@ class _InputScreenState extends State<InputScreen> {
                                     label: 'ЧСС',
                                     hint: 'Введіть ЧСС (уд/хв)',
                                     icon: Icons.favorite,
-                                    validator: _validatePositiveInteger,
+                                    validator: validateHeartRate,
                                   ),
                                 ),
                                 SizedBox(
@@ -435,7 +416,7 @@ class _InputScreenState extends State<InputScreen> {
                                     label: 'Систолічний АТ',
                                     hint: 'Введіть систолічний АТ (мм рт. ст.)',
                                     icon: Icons.arrow_upward,
-                                    validator: _validatePositiveInteger,
+                                    validator: validateSystolicBP,
                                   ),
                                 ),
                                 SizedBox(
@@ -445,7 +426,7 @@ class _InputScreenState extends State<InputScreen> {
                                     label: 'Діастолічний АТ',
                                     hint: 'Введіть діастолічний АТ (мм рт. ст.)',
                                     icon: Icons.arrow_downward,
-                                    validator: _validatePositiveInteger,
+                                    validator: validateDiastolicBP,
                                   ),
                                 ),
                               ],

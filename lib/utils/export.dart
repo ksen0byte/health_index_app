@@ -1,11 +1,7 @@
-import 'dart:io';
 import 'package:csv/csv.dart';
-import 'package:path_provider/path_provider.dart';
-import '../repo/user_health_data_repo.dart';
+import 'package:health_index_app/models/user_health_data.dart';
 
-Future<String> exportUserDataToCSV({List<int>? groupIds}) async {
-  final users = await UserHealthDataRepo().fetchRecordsByGroups(groupIds);
-
+Future<String> generateUserDataCSV(List<UserHealthData> users) async {
   List<List<dynamic>> rows = [];
 
   // Add header
@@ -40,11 +36,5 @@ Future<String> exportUserDataToCSV({List<int>? groupIds}) async {
   }
 
   String csvData = const ListToCsvConverter().convert(rows);
-  final directory = await getApplicationDocumentsDirectory();
-  final path = '${directory.path}/user_data.csv';
-  final file = File(path);
-
-  await file.writeAsString(csvData);
-
-  return path;
+  return csvData;
 }

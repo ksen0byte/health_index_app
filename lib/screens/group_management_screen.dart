@@ -1,11 +1,18 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 import '../models/group.dart';
 import '../models/health_index.dart';
 import '../models/user_health_data.dart';
 import '../repo/group_repo.dart';
 import '../repo/user_health_data_repo.dart';
 import '../utils/calculator.dart';
+import '../utils/export.dart';
 import 'result_screen.dart';
+import 'package:file_selector/file_selector.dart';
 
 class GroupManagementScreen extends StatefulWidget {
   const GroupManagementScreen({super.key});
@@ -88,7 +95,6 @@ class _GroupManagementScreenState extends State<GroupManagementScreen> {
                 if (name.isNotEmpty) {
                   await _groupRepo.insertGroup(Group(name: name));
                   await _loadGroupsAndUsers();
-                  // ignore: use_build_context_synchronously
                   Navigator.of(context).pop();
                 }
               },
@@ -123,7 +129,6 @@ class _GroupManagementScreenState extends State<GroupManagementScreen> {
                 if (name.isNotEmpty) {
                   await _groupRepo.updateGroup(Group(id: group.id, name: name));
                   await _loadGroupsAndUsers();
-                  // ignore: use_build_context_synchronously
                   Navigator.of(context).pop();
                 }
               },
@@ -133,6 +138,68 @@ class _GroupManagementScreenState extends State<GroupManagementScreen> {
         );
       },
     );
+  }
+
+  // Export all data
+  void _exportAllData() async {
+    try {
+      String csvData = await generateUserDataCSV(await UserHealthDataRepo().fetchRecordsByGroups([]));
+      final FileSaveLocation? fileSaveLocation = await getSaveLocation(
+        initialDirectory: (await getApplicationDocumentsDirectory()).path,
+        suggestedName: 'all_data_${DateTime.now().millisecondsSinceEpoch}.csv',
+      );
+      if (fileSaveLocation == null) {
+        // Operation was canceled by the user.
+        return;
+      }
+
+      final XFile textFile = XFile.fromData(
+        Uint8List.fromList(csvData.codeUnits),
+        mimeType: 'text/csv',
+      );
+
+      await textFile.saveTo(fileSaveLocation.path);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Дані успішно експортовано до ${fileSaveLocation.path}')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Не вдалося експортувати дані: $e')),
+      );
+    }
+  }
+
+  // Export data for a specific group
+  void _exportGroupData(Group group) async {
+    try {
+      String sanitizedGroupName = group.name.replaceAll(' ', '_');
+
+      String csvData = await generateUserDataCSV(await UserHealthDataRepo().fetchRecordsByGroups([group.id!]));
+      final FileSaveLocation? fileSaveLocation = await getSaveLocation(
+        initialDirectory: (await getApplicationDocumentsDirectory()).path,
+        suggestedName: 'group_${sanitizedGroupName}_${DateTime.now().millisecondsSinceEpoch}.csv',
+      );
+      if (fileSaveLocation == null) {
+        // Operation was canceled by the user.
+        return;
+      }
+
+      final XFile textFile = XFile.fromData(
+        Uint8List.fromList(csvData.codeUnits),
+        mimeType: 'text/csv',
+      );
+
+      await textFile.saveTo(fileSaveLocation.path);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Дані для групи "${group.name}" успішно експортовано до ${fileSaveLocation.path}')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Не вдалося експортувати дані: $e')),
+      );
+    }
   }
 
   /// Deletes a group after confirmation, transferring its users to the default group.
@@ -284,6 +351,17 @@ class _GroupManagementScreenState extends State<GroupManagementScreen> {
             ),
           ],
         ),
+        actions: [
+          Tooltip(
+            message: 'Експортувати всі дані', // 'Export All Data'
+            child: IconButton(
+              icon: const Icon(Icons.download),
+              color: colorScheme.onPrimary,
+              padding: const EdgeInsets.only(left: 40.0, right: 40.0),
+              onPressed: _exportAllData,
+            ),
+          ),
+        ],
       ),
       body: ListView.builder(
         padding: const EdgeInsets.all(16),
@@ -291,6 +369,7 @@ class _GroupManagementScreenState extends State<GroupManagementScreen> {
         itemBuilder: (context, index) {
           final group = _groups[index];
           final users = _groupedUsers[group.id] ?? [];
+          final isNotDefaultGroup = group.name != GroupRepo.defaultGroupName;
           return Card(
             margin: const EdgeInsets.symmetric(vertical: 8),
             child: Theme(
@@ -321,27 +400,48 @@ class _GroupManagementScreenState extends State<GroupManagementScreen> {
                       ),
                     ),
                     // Edit/Delete buttons for groups (except default group)
-                    group.name != GroupRepo.defaultGroupName
-                        ? Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Tooltip(
-                                message: 'Редагувати групу', // 'Edit Group'
-                                child: IconButton(
-                                  icon: Icon(Icons.edit, color: colorScheme.primary),
-                                  onPressed: () => _editGroup(group),
+                    // Actions for the group
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        PopupMenuButton<String>(
+                          onSelected: (String value) {
+                            if (value == 'edit') {
+                              _editGroup(group);
+                            } else if (value == 'delete') {
+                              _deleteGroup(group);
+                            } else if (value == 'export') {
+                              _exportGroupData(group);
+                            }
+                          },
+                          itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                            if (isNotDefaultGroup)
+                              PopupMenuItem<String>(
+                                value: 'edit',
+                                child: ListTile(
+                                  leading: Icon(Icons.edit, color: colorScheme.primary),
+                                  title: const Text('Редагувати групу'), // 'Edit Group'
                                 ),
                               ),
-                              Tooltip(
-                                message: 'Видалити групу', // 'Delete Group'
-                                child: IconButton(
-                                  icon: const Icon(Icons.delete, color: Colors.redAccent),
-                                  onPressed: () => _deleteGroup(group),
+                            PopupMenuItem<String>(
+                              value: 'export',
+                              child: ListTile(
+                                leading: Icon(Icons.download, color: colorScheme.primary),
+                                title: const Text('Експортувати дані'), // 'Export Data'
+                              ),
+                            ),
+                            if (isNotDefaultGroup)
+                              const PopupMenuItem<String>(
+                                value: 'delete',
+                                child: ListTile(
+                                  leading: Icon(Icons.delete, color: Colors.redAccent),
+                                  title: Text('Видалити групу'), // 'Delete Group'
                                 ),
                               ),
-                            ],
-                          )
-                        : const SizedBox.shrink(),
+                          ],
+                        ),
+                      ],
+                    ),
                   ],
                 ),
                 // Users in each group

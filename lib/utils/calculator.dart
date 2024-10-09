@@ -115,7 +115,7 @@ void validateInput(HealthData data) {
       data.heartRate <= 0 ||
       data.systolicBP <= 0 ||
       data.diastolicBP <= 0) {
-    throw ArgumentError('Всі значення повинні бути більшими за нуль.');
+    throw ArgumentError('Всі значення повинні бути позитивними числами.');
   }
 }
 
