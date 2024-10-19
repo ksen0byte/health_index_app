@@ -89,7 +89,7 @@ class ResultScreen extends StatelessWidget {
         if (value != null && minValue != null && maxValue != null) ...[
           const SizedBox(height: 8),
           SizedBox(
-            height: 40, // Reduce the height of the gauge
+            height: 48, // Reduce the height of the gauge
             child: _buildLinearGauge(
               value: value,
               minValue: minValue,
@@ -135,118 +135,116 @@ class ResultScreen extends StatelessWidget {
           ],
         ),
       ),
-      body: SingleChildScrollView(
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              // Додаємо прокручування, якщо контент не вміщується
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text(
-                  'Ваш ІФЗ',
-                  style: TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              const Text(
+                'Ваш ІФЗ',
+                style: TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
                 ),
-                const SizedBox(height: 24),
-                // Коло з індексом
-                Container(
-                  width: 150,
-                  height: 150,
-                  decoration: BoxDecoration(
-                    color: healthIndex.healthIndexLevelResult.color, // Використовуємо основний колір
-                    shape: BoxShape.circle,
-                  ),
-                  child: Center(
-                    child: Text(
-                      healthIndex.index.toStringAsFixed(2),
-                      style: const TextStyle(
-                        fontSize: 48,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white, // Текст білий для кращого контрасту
-                        shadows: [
-                          Shadow(
-                            offset: Offset(0, 2),
-                            blurRadius: 4,
-                            color: Colors.black26,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+              ),
+              const SizedBox(height: 24),
+              // Коло з індексом
+              Container(
+                width: 150,
+                height: 150,
+                decoration: BoxDecoration(
+                  color: healthIndex.healthIndexLevelResult.color, // Використовуємо основний колір
+                  shape: BoxShape.circle,
                 ),
-                const SizedBox(height: 24),
-                // Рівень ІФЗ
-                Text(
-                  healthIndex.healthIndexLevelResult.text,
-                  style: const TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black87,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 40),
-                // Додаткові інтерпретації
-                Center(
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(
-                      maxWidth: MediaQuery.of(context).size.width * 0.75, // 50% ширини екрану
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildInterpretationSection(
-                          title: 'Довготривалий прогноз здоров\'я',
-                          valueText: healthIndex.healthIndexLevelResult.longTermHealthForecast.text,
-                          icon: Icons.health_and_safety,
-                          color: healthIndex.healthIndexLevelResult.color,
-                          value: healthIndex.healthIndexLevelResult.longTermHealthForecast.value * 100,
-                          minValue: 70,
-                          maxValue: 110,
-                        ),
-                        _buildInterpretationSection(
-                          title: 'Генетична програма тривалості життя',
-                          valueText: healthIndex.healthIndexLevelResult.geneticLifeExpectancy.text,
-                          icon: Icons.timeline,
-                          color: healthIndex.healthIndexLevelResult.color,
-                          value: healthIndex.healthIndexLevelResult.geneticLifeExpectancy.value * 100,
-                          minValue: 70,
-                          maxValue: 110,
-                        ),
-                        _buildInterpretationSection(
-                          title: 'Ризик захворювань з тимчасовою втратою дієздатності',
-                          valueText: healthIndex.healthIndexLevelResult.diseaseRisk.text,
-                          icon: Icons.warning_amber_rounded,
-                          color: healthIndex.healthIndexLevelResult.color,
-                          value: healthIndex.healthIndexLevelResult.diseaseRisk.value * 100,
-                          minValue: 0,
-                          maxValue: 60,
-                          gaugeInverted: true,
+                child: Center(
+                  child: Text(
+                    healthIndex.index.toStringAsFixed(2),
+                    style: const TextStyle(
+                      fontSize: 48,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white, // Текст білий для кращого контрасту
+                      shadows: [
+                        Shadow(
+                          offset: Offset(0, 2),
+                          blurRadius: 4,
+                          color: Colors.black26,
                         ),
                       ],
                     ),
                   ),
                 ),
-                const SizedBox(height: 40),
-                ElevatedButton.icon(
-                  onPressed: () {
-                    Navigator.popUntil(context, (route) => route.isFirst);
-                  },
-                  icon: const Icon(Icons.home),
-                  label: const Text('На головний екран'),
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                    textStyle: const TextStyle(fontSize: 18),
-                    backgroundColor: colorScheme.primary,
-                    foregroundColor: colorScheme.onPrimary,
+              ),
+              const SizedBox(height: 24),
+              // Рівень ІФЗ
+              Text(
+                healthIndex.healthIndexLevelResult.text,
+                style: const TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black87,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 40),
+              // Додаткові інтерпретації
+              Center(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxWidth: MediaQuery.of(context).size.width * 0.75, // 50% ширини екрану
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildInterpretationSection(
+                        title: 'Довготривалий прогноз здоров\'я',
+                        valueText: healthIndex.healthIndexLevelResult.longTermHealthForecast.text,
+                        icon: Icons.health_and_safety,
+                        color: healthIndex.healthIndexLevelResult.color,
+                        value: healthIndex.healthIndexLevelResult.longTermHealthForecast.value * 100,
+                        minValue: 70,
+                        maxValue: 110,
+                      ),
+                      _buildInterpretationSection(
+                        title: 'Генетична програма тривалості життя',
+                        valueText: healthIndex.healthIndexLevelResult.geneticLifeExpectancy.text,
+                        icon: Icons.timeline,
+                        color: healthIndex.healthIndexLevelResult.color,
+                        value: healthIndex.healthIndexLevelResult.geneticLifeExpectancy.value * 100,
+                        minValue: 70,
+                        maxValue: 110,
+                      ),
+                      _buildInterpretationSection(
+                        title: 'Ризик захворювань з тимчасовою втратою дієздатності',
+                        valueText: healthIndex.healthIndexLevelResult.diseaseRisk.text,
+                        icon: Icons.warning_amber_rounded,
+                        color: healthIndex.healthIndexLevelResult.color,
+                        value: healthIndex.healthIndexLevelResult.diseaseRisk.value * 100,
+                        minValue: 0,
+                        maxValue: 60,
+                        gaugeInverted: true,
+                      ),
+                    ],
                   ),
                 ),
-              ],
-            ),
+              ),
+              const SizedBox(height: 40),
+              ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.popUntil(context, (route) => route.isFirst);
+                },
+                icon: const Icon(Icons.home),
+                label: const Text('На головний екран'),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                  textStyle: const TextStyle(fontSize: 18),
+                  backgroundColor: colorScheme.primary,
+                  foregroundColor: colorScheme.onPrimary,
+                ),
+              ),
+            ],
           ),
         ),
       ),

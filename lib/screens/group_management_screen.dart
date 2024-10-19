@@ -446,7 +446,7 @@ class _GroupManagementScreenState extends State<GroupManagementScreen> {
 
                   return ListTile(
                     leading: CircleAvatar(
-                      backgroundColor: colorScheme.surfaceContainerHighest,
+                      backgroundColor: colorScheme.surface,
                       child: Icon(Icons.person, color: colorScheme.onSurface.withOpacity(0.7), size: 20),
                     ),
                     title: Row(
