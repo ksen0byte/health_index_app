@@ -3,7 +3,7 @@ import 'database_helper.dart';
 import '../models/group.dart';
 
 class GroupRepo {
-  static const defaultGroupName = 'Default Group';
+  static const defaultGroupName = 'Група за замовчуванням';
   static const table = 'groups';
 
   static const String createTableStr = '''

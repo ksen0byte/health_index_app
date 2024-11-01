@@ -253,7 +253,7 @@ class _GroupManagementScreenState extends State<GroupManagementScreen> {
                     selectedGroup = group;
                   },
                   decoration: const InputDecoration(
-                    labelText: 'Група', // 'Group'
+                    labelText: 'Каталог', // 'Group'
                   ),
                 ),
               ],
@@ -328,7 +328,7 @@ class _GroupManagementScreenState extends State<GroupManagementScreen> {
             ),
             const SizedBox(width: 8),
             Text(
-              'Управління групами', // 'Group Management'
+              'Управління каталогами', // 'Group Management'
               style: TextStyle(
                 color: colorScheme.onPrimary,
               ),
