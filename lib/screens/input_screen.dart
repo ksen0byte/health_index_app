@@ -72,10 +72,10 @@ class _InputScreenState extends State<InputScreen> {
                 _heartRateController.clear();
                 _systolicBPController.clear();
                 _diastolicBPController.clear();
-                _activityLevelController.clear();
                 _firstNameController.clear();
                 _lastNameController.clear();
                 _selectedGroup = _defaultGroup;
+                _selectedActivityLevel = null;
               },
             ),
           ],
@@ -93,7 +93,7 @@ class _InputScreenState extends State<InputScreen> {
   final _heartRateController = TextEditingController();
   final _systolicBPController = TextEditingController();
   final _diastolicBPController = TextEditingController();
-  final _activityLevelController = TextEditingController();
+  ActivityLevel? _selectedActivityLevel;
 
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
@@ -143,7 +143,6 @@ class _InputScreenState extends State<InputScreen> {
     _heartRateController.dispose();
     _systolicBPController.dispose();
     _diastolicBPController.dispose();
-    _activityLevelController.dispose();
     _firstNameController.dispose();
     _lastNameController.dispose();
     super.dispose();
@@ -159,7 +158,7 @@ class _InputScreenState extends State<InputScreen> {
           heartRate: int.parse(_heartRateController.text),
           systolicBP: int.parse(_systolicBPController.text),
           diastolicBP: int.parse(_diastolicBPController.text),
-          activityLevel: int.parse(_activityLevelController.text),
+          activityLevel: _selectedActivityLevel != null ? ActivityLevel.values.indexOf(_selectedActivityLevel!) + 1 : 1,
         );
 
         final healthIndex = calculateHealthIndex(data);
@@ -223,9 +222,6 @@ class _InputScreenState extends State<InputScreen> {
         labelText: label,
         hintText: hint,
         prefixIcon: Icon(icon),
-        border: const OutlineInputBorder(),
-        filled: true,
-        fillColor: Colors.white,
       ),
       keyboardType: TextInputType.number,
       inputFormatters: [
@@ -309,7 +305,6 @@ class _InputScreenState extends State<InputScreen> {
                           decoration: const InputDecoration(
                             labelText: 'Ім\'я',
                             prefixIcon: Icon(Icons.person),
-                            border: OutlineInputBorder(),
                           ),
                           validator: validateName,
                         ),
@@ -319,7 +314,6 @@ class _InputScreenState extends State<InputScreen> {
                           decoration: const InputDecoration(
                             labelText: 'Прізвище',
                             prefixIcon: Icon(Icons.person_outline),
-                            border: OutlineInputBorder(),
                           ),
                           validator: validateLastName,
                         ),
@@ -339,9 +333,8 @@ class _InputScreenState extends State<InputScreen> {
                             });
                           },
                           decoration: const InputDecoration(
-                            labelText: 'Група',
+                            labelText: 'Каталог',
                             prefixIcon: Icon(Icons.group),
-                            border: OutlineInputBorder(),
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -365,7 +358,7 @@ class _InputScreenState extends State<InputScreen> {
                                 alignment: Alignment.centerRight,
                                 child: TextButton(
                                   onPressed: _navigateToGroupManagement,
-                                  child: const Text('Управління групами'),
+                                  child: const Text('Управління каталогами'),
                                 ),
                               ),
                             ),
@@ -378,7 +371,7 @@ class _InputScreenState extends State<InputScreen> {
                             double widthLimit = 200;
                             int numOfColumns = 3;
                             final fieldWidth =
-                                (constraints.maxWidth - 48) / numOfColumns; // Adjust for padding and spacing
+                                (constraints.maxWidth - 32) / numOfColumns; // Adjust for padding and spacing
                             final List<Widget> fields = [
                               SizedBox(
                                 width: fieldWidth > widthLimit ? fieldWidth : widthLimit,
@@ -440,15 +433,24 @@ class _InputScreenState extends State<InputScreen> {
                                   validator: validateDiastolicBP,
                                 ),
                               ),
-                              SizedBox(
-                                width: fieldWidth > widthLimit ? fieldWidth : widthLimit,
-                                child: _buildCompactTextField(
-                                  controller: _activityLevelController,
-                                  label: 'Рівень рухової активності',
-                                  hint: 'Введіть рівень рухової активності 1-10 (балів)',
-                                  icon: Icons.fitness_center,
-                                  validator: validateActivityLevel,
+                              DropdownButtonFormField<ActivityLevel>(
+                                value: _selectedActivityLevel,
+                                items: ActivityLevel.values.map((ActivityLevel level) {
+                                  return DropdownMenuItem<ActivityLevel>(
+                                    value: level,
+                                    child: Text(activityLevelDescriptions[level]!),
+                                  );
+                                }).toList(),
+                                onChanged: (ActivityLevel? newValue) {
+                                  setState(() {
+                                    _selectedActivityLevel = newValue;
+                                  });
+                                },
+                                decoration: const InputDecoration(
+                                  labelText: 'Рівень рухової активності',
+                                  prefixIcon: Icon(Icons.fitness_center),
                                 ),
+                                validator: (value) => value == null ? 'Будь ласка, виберіть рівень активності' : null,
                               ),
                             ];
 

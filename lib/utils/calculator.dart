@@ -3,6 +3,27 @@ import 'package:flutter/material.dart';
 import '../models/health_index.dart';
 import '../models/health_data.dart';
 
+enum ActivityLevel {
+  level1,
+  level2,
+  level3,
+  level4,
+  level5,
+  level6,
+  level7,
+}
+
+final Map<ActivityLevel, String> activityLevelDescriptions = {
+  ActivityLevel.level1: '1 - Мінімальні навантаження (працівники розумової праці, сидяча робота)',
+  ActivityLevel.level2: '2 - Трохи денної активності або легкі вправи 2-3 рази на тиждень',
+  ActivityLevel.level3: '3 - Робота середньої тяжкості або тренування 4-5 разів на тиждень',
+  ActivityLevel.level4: '4 - Інтенсивні тренування 4-5 разів на тиждень',
+  ActivityLevel.level5: '5 - Щоденні тренування',
+  ActivityLevel.level6: '6 - Щоденні інтенсивні тренування або тренування 2 рази в день',
+  ActivityLevel.level7: '7 - Важка фізична робота або інтенсивні тренування 2 рази в день',
+};
+
+
 final Map<AgeGroup, AgeGroupIndexRanges> indexByAgeGroup = {
   AgeGroup.age13to14: AgeGroupIndexRanges(
     high: IndexRange(0, 2.09),
