@@ -321,6 +321,7 @@ class _InputScreenState extends State<InputScreen> {
                         // Group selection
                         DropdownButtonFormField<Group>(
                           value: _selectedGroup,
+                          dropdownColor: Theme.of(context).inputDecorationTheme.fillColor,
                           items: _groups.map((group) {
                             return DropdownMenuItem<Group>(
                               value: group,
@@ -435,6 +436,8 @@ class _InputScreenState extends State<InputScreen> {
                               ),
                               DropdownButtonFormField<ActivityLevel>(
                                 value: _selectedActivityLevel,
+                                isExpanded: true,
+                                dropdownColor: Theme.of(context).inputDecorationTheme.fillColor,
                                 items: ActivityLevel.values.map((ActivityLevel level) {
                                   return DropdownMenuItem<ActivityLevel>(
                                     value: level,

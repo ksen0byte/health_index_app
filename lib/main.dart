@@ -27,11 +27,11 @@ class HealthIndexApp extends StatelessWidget {
         textTheme: const TextTheme(
           bodyMedium: TextStyle(fontSize: 16),
         ),
-        inputDecorationTheme: const InputDecorationTheme(
+        inputDecorationTheme: InputDecorationTheme(
           filled: true,
-          fillColor: Colors.white70,
-          border: OutlineInputBorder(),
-        )
+          fillColor: ColorScheme.fromSeed(seedColor: Colors.green).surfaceBright,
+          border: const OutlineInputBorder(),
+        ),
       ),
       home: const InputScreen(),
     );
