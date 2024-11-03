@@ -10,7 +10,7 @@ class UserHealthDataRepo {
   static const String createTableStr = '''
     CREATE TABLE $table (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      group_id INTEGER,
+      folder_id INTEGER,
       first_name TEXT NOT NULL,
       last_name TEXT NOT NULL,
       age INTEGER NOT NULL,
@@ -23,7 +23,7 @@ class UserHealthDataRepo {
       health_index REAL NOT NULL,
       recorded_at TEXT NOT NULL,
       is_deleted INTEGER NOT NULL DEFAULT 0,
-      FOREIGN KEY (group_id) REFERENCES groups(id)
+      FOREIGN KEY (folder_id) REFERENCES folders(id)
     )
   ''';
 
@@ -44,7 +44,7 @@ class UserHealthDataRepo {
     return result.map((row) {
       return UserHealthData(
         id: row['id'],
-        groupId: row['group_id'],
+        folderId: row['folder_id'],
         firstName: row['first_name'],
         lastName: row['last_name'],
         healthData: HealthData(
@@ -95,24 +95,24 @@ class UserHealthDataRepo {
     );
   }
 
-  Future<void> transferUsersToDefaultGroup(int oldGroupId, int defaultGroupId) async {
+  Future<void> transferUsersToDefaultFolder(int oldFolderId, int defaultFolderId) async {
     Database db = await DatabaseHelper.instance.database;
     await db.update(
       table,
-      {'group_id': defaultGroupId},
-      where: 'group_id = ?',
-      whereArgs: [oldGroupId],
+      {'folder_id': defaultFolderId},
+      where: 'folder_id = ?',
+      whereArgs: [oldFolderId],
     );
   }
 
-  Future<List<UserHealthData>> fetchRecordsByGroups(List<int>? groupIds) async {
+  Future<List<UserHealthData>> fetchRecordsByFolders(List<int>? folderIds) async {
     Database db = await DatabaseHelper.instance.database;
     String whereClause = 'is_deleted = 0';
     List<dynamic> whereArgs = [];
 
-    if (groupIds != null && groupIds.isNotEmpty) {
-      whereClause += ' AND group_id IN (${groupIds.map((_) => '?').join(', ')})';
-      whereArgs.addAll(groupIds);
+    if (folderIds != null && folderIds.isNotEmpty) {
+      whereClause += ' AND folder_id IN (${folderIds.map((_) => '?').join(', ')})';
+      whereArgs.addAll(folderIds);
     }
 
     final List<Map<String, dynamic>> result = await db.query(
@@ -124,7 +124,7 @@ class UserHealthDataRepo {
     return result.map((row) {
       return UserHealthData(
         id: row['id'],
-        groupId: row['group_id'],
+        folderId: row['folder_id'],
         firstName: row['first_name'],
         lastName: row['last_name'],
         healthData: HealthData(

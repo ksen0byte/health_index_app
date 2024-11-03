@@ -1,8 +1,8 @@
-class Group {
+class Folder {
   int? id;
   final String name;
 
-  Group({this.id, required this.name});
+  Folder({this.id, required this.name});
 
   Map<String, Object?> toMap() {
     return {
@@ -13,14 +13,14 @@ class Group {
 
   @override
   String toString() {
-    return 'Group{id: $id, name: $name}';
+    return 'Folder{id: $id, name: $name}';
   }
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
 
-    return other is Group &&
+    return other is Folder &&
         other.id == id && // Compare by `id` or any other unique identifier
         other.name == name;
   }

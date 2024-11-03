@@ -1,10 +1,10 @@
 import 'package:sqflite/sqflite.dart';
 import 'database_helper.dart';
-import '../models/group.dart';
+import '../models/folder.dart';
 
-class GroupRepo {
-  static const defaultGroupName = 'Група за замовчуванням';
-  static const table = 'groups';
+class FolderRepo {
+  static const defaultFolderName = 'Тека за замовчуванням';
+  static const table = 'folders';
 
   static const String createTableStr = '''
     CREATE TABLE $table (
@@ -13,34 +13,34 @@ class GroupRepo {
     )
   ''';
 
-  Future<int> insertGroup(Group group) async {
+  Future<int> insertFolder(Folder folder) async {
     Database db = await DatabaseHelper.instance.database;
-    return await db.insert(table, group.toMap());
+    return await db.insert(table, folder.toMap());
   }
 
-  Future<List<Group>> fetchGroups() async {
+  Future<List<Folder>> fetchFolders() async {
     Database db = await DatabaseHelper.instance.database;
     final List<Map<String, dynamic>> result = await db.query(table);
 
     return result.map((row) {
-      return Group(
+      return Folder(
         id: row['id'],
         name: row['name'],
       );
     }).toList();
   }
 
-  Future<int> updateGroup(Group group) async {
+  Future<int> updateFolder(Folder folder) async {
     Database db = await DatabaseHelper.instance.database;
     return await db.update(
       table,
-      group.toMap(),
+      folder.toMap(),
       where: 'id = ?',
-      whereArgs: [group.id],
+      whereArgs: [folder.id],
     );
   }
 
-  Future<int> deleteGroup(int id) async {
+  Future<int> deleteFolder(int id) async {
     Database db = await DatabaseHelper.instance.database;
     return await db.delete(
       table,
@@ -49,22 +49,22 @@ class GroupRepo {
     );
   }
 
-  Future<Group> getDefaultGroup() async {
+  Future<Folder> getDefaultFolder() async {
     Database db = await DatabaseHelper.instance.database;
     final List<Map<String, dynamic>> result = await db.query(
       table,
       where: 'name = ?',
-      whereArgs: [defaultGroupName],
+      whereArgs: [defaultFolderName],
       limit: 1,
     );
     if (result.isNotEmpty) {
-      return Group(
+      return Folder(
         id: result.first['id'],
         name: result.first['name'],
       );
     } else {
-      // Handle the case where default group doesn't exist
-      throw Exception('Default group not found');
+      // Handle the case where default folder doesn't exist
+      throw Exception('Default folder not found');
     }
   }
 }

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../models/group.dart';
+import '../models/folder.dart';
 import '../models/health_data.dart';
 import '../models/user_health_data.dart';
-import '../repo/group_repo.dart';
+import '../repo/folder_repo.dart';
 import '../repo/user_health_data_repo.dart';
 import '../utils/calculator.dart';
 import '../utils/validator.dart';
-import 'group_management_screen.dart';
+import 'folder_management_screen.dart';
 import 'result_screen.dart';
 
 class InputScreen extends StatefulWidget {
@@ -74,7 +74,7 @@ class _InputScreenState extends State<InputScreen> {
                 _diastolicBPController.clear();
                 _firstNameController.clear();
                 _lastNameController.clear();
-                _selectedGroup = _defaultGroup;
+                _selectedFolder = _defaultFolder;
                 _selectedActivityLevel = null;
               },
             ),
@@ -99,39 +99,39 @@ class _InputScreenState extends State<InputScreen> {
   final _lastNameController = TextEditingController();
 
   final UserHealthDataRepo _usersRepo = UserHealthDataRepo();
-  final GroupRepo _groupRepo = GroupRepo();
-  List<Group> _groups = [];
-  late Group _defaultGroup;
-  Group? _selectedGroup;
+  final FolderRepo _folderRepo = FolderRepo();
+  List<Folder> _folders = [];
+  late Folder _defaultFolder;
+  Folder? _selectedFolder;
   bool _saveData = false;
 
   @override
   void initState() {
     super.initState();
-    _loadGroups(); // Load groups and preselect a default
+    _loadFolders(); // Load folders and preselect a default
   }
 
-  Future<void> _loadGroups() async {
-    final groups = await _groupRepo.fetchGroups();
-    var defaultGroup = groups.firstWhere(
-      (group) => group.name == GroupRepo.defaultGroupName,
-      orElse: () => groups.first,
+  Future<void> _loadFolders() async {
+    final folders = await _folderRepo.fetchFolders();
+    var defaultFolder = folders.firstWhere(
+      (folder) => folder.name == FolderRepo.defaultFolderName,
+      orElse: () => folders.first,
     );
     setState(() {
-      _groups = groups;
-      _defaultGroup = defaultGroup;
-      _selectedGroup = _selectedGroup != null && _groups.contains(_selectedGroup)
-          ? _selectedGroup // Keep the previously selected group if it's still valid
-          : defaultGroup;
+      _folders = folders;
+      _defaultFolder = defaultFolder;
+      _selectedFolder = _selectedFolder != null && _folders.contains(_selectedFolder)
+          ? _selectedFolder // Keep the previously selected folder if it's still valid
+          : defaultFolder;
     });
   }
 
-  void _navigateToGroupManagement() async {
+  void _navigateToFolderManagement() async {
     await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const GroupManagementScreen()),
+      MaterialPageRoute(builder: (context) => const FolderManagementScreen()),
     );
-    await _loadGroups();
+    await _loadFolders();
   }
 
   @override
@@ -169,7 +169,7 @@ class _InputScreenState extends State<InputScreen> {
             lastName: _lastNameController.text.trim(),
             healthData: data,
             healthIndex: healthIndex.index,
-            groupId: _selectedGroup?.id,
+            folderId: _selectedFolder?.id,
             recordedAt: DateTime.now(),
           );
           _save(userHealthData);
@@ -318,23 +318,23 @@ class _InputScreenState extends State<InputScreen> {
                           validator: validateLastName,
                         ),
                         const SizedBox(height: 16),
-                        // Group selection
-                        DropdownButtonFormField<Group>(
-                          value: _selectedGroup,
+                        // folder selection
+                        DropdownButtonFormField<Folder>(
+                          value: _selectedFolder,
                           dropdownColor: Theme.of(context).inputDecorationTheme.fillColor,
-                          items: _groups.map((group) {
-                            return DropdownMenuItem<Group>(
-                              value: group,
-                              child: Text(group.name),
+                          items: _folders.map((folder) {
+                            return DropdownMenuItem<Folder>(
+                              value: folder,
+                              child: Text(folder.name),
                             );
                           }).toList(),
-                          onChanged: (group) {
+                          onChanged: (folder) {
                             setState(() {
-                              _selectedGroup = group;
+                              _selectedFolder = folder;
                             });
                           },
                           decoration: const InputDecoration(
-                            labelText: 'Каталог',
+                            labelText: 'Тека',
                             prefixIcon: Icon(Icons.group),
                           ),
                         ),
@@ -358,8 +358,8 @@ class _InputScreenState extends State<InputScreen> {
                               child: Align(
                                 alignment: Alignment.centerRight,
                                 child: TextButton(
-                                  onPressed: _navigateToGroupManagement,
-                                  child: const Text('Управління каталогами'),
+                                  onPressed: _navigateToFolderManagement,
+                                  child: const Text('Управління теками'),
                                 ),
                               ),
                             ),

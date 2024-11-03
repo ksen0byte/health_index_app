@@ -1,9 +1,8 @@
 import 'package:sqflite/sqflite.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart';
 import 'dart:io';
 
-import 'group_repo.dart';
+import 'folder_repo.dart';
 import 'user_health_data_repo.dart';
 
 class DatabaseHelper {
@@ -22,8 +21,7 @@ class DatabaseHelper {
   }
 
   Future<Database> _initDatabase() async {
-    Directory documentsDirectory = await getApplicationDocumentsDirectory();
-    String path = join(documentsDirectory.path, _databaseName);
+    String path = join(dirname(Platform.resolvedExecutable), _databaseName);
 
     // ignore: avoid_print
     print('Database path: $path'); // This will print the database path
@@ -32,10 +30,10 @@ class DatabaseHelper {
   }
 
   Future _onCreate(Database db, int version) async {
-    await db.execute(GroupRepo.createTableStr);
+    await db.execute(FolderRepo.createTableStr);
     await db.execute(UserHealthDataRepo.createTableStr);
 
-    // Insert default group
-    await db.insert(GroupRepo.table, {'name': GroupRepo.defaultGroupName});
+    // Insert default folder
+    await db.insert(FolderRepo.table, {'name': FolderRepo.defaultFolderName});
   }
 }

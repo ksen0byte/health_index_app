@@ -3,10 +3,10 @@
 import 'package:flutter/material.dart';
 import 'package:health_index_app/utils/export.dart';
 
-import '../models/group.dart';
+import '../models/folder.dart';
 import '../models/health_index.dart';
 import '../models/user_health_data.dart';
-import '../repo/group_repo.dart';
+import '../repo/folder_repo.dart';
 import '../repo/user_health_data_repo.dart';
 import '../utils/calculator.dart';
 import '../utils/csv_generator.dart';
@@ -14,50 +14,50 @@ import 'result_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:collection/collection.dart';
 
-class GroupManagementScreen extends StatefulWidget {
-  const GroupManagementScreen({super.key});
+class FolderManagementScreen extends StatefulWidget {
+  const FolderManagementScreen({super.key});
 
   @override
   // ignore: library_private_types_in_public_api
-  _GroupManagementScreenState createState() => _GroupManagementScreenState();
+  _FolderManagementScreenState createState() => _FolderManagementScreenState();
 }
 
-class _GroupManagementScreenState extends State<GroupManagementScreen> {
+class _FolderManagementScreenState extends State<FolderManagementScreen> {
   final UserHealthDataRepo _usersRepo = UserHealthDataRepo();
-  final GroupRepo _groupRepo = GroupRepo();
+  final FolderRepo _folderRepo = FolderRepo();
 
-  List<Group> _groups = [];
+  List<Folder> _folders = [];
   Map<int, List<UserHealthData>> _groupedUsers = {};
 
   @override
   void initState() {
     super.initState();
-    _loadGroupsAndUsers();
+    _loadFoldersAndUsers();
   }
 
-  /// Loads both groups and users, grouping users by their group IDs.
-  Future<void> _loadGroupsAndUsers() async {
-    final groups = await _groupRepo.fetchGroups();
+  /// Loads both fodlers and users, grouping users by their folder IDs.
+  Future<void> _loadFoldersAndUsers() async {
+    final folders = await _folderRepo.fetchFolders();
     final users = await _usersRepo.fetchRecords();
 
-    // Group users by groupId
+    // Group users by folderId
     Map<int, List<UserHealthData>> groupedUsers = {};
-    for (var group in groups) {
-      groupedUsers[group.id!] = [];
+    for (var folder in folders) {
+      groupedUsers[folder.id!] = [];
     }
     for (var user in users) {
-      if (user.groupId != null && groupedUsers.containsKey(user.groupId)) {
-        groupedUsers[user.groupId!]!.add(user);
+      if (user.folderId != null && groupedUsers.containsKey(user.folderId)) {
+        groupedUsers[user.folderId!]!.add(user);
       } else {
-        // If groupId is null or not found, assign to default group
-        final defaultGroup = await _groupRepo.getDefaultGroup();
-        user.groupId = defaultGroup.id;
-        groupedUsers[defaultGroup.id!]!.add(user);
+        // If folderId is null or not found, assign to default folder
+        final defaultFolder = await _folderRepo.getDefaultFolder();
+        user.folderId = defaultFolder.id;
+        groupedUsers[defaultFolder.id!]!.add(user);
       }
     }
 
     setState(() {
-      _groups = groups;
+      _folders = folders;
       _groupedUsers = groupedUsers;
     });
   }
@@ -72,17 +72,17 @@ class _GroupManagementScreenState extends State<GroupManagementScreen> {
     );
   }
 
-  /// Displays a dialog to add a new group.
-  void _addGroup() {
+  /// Displays a dialog to add a new folder.
+  void _addFolder() {
     showDialog(
       context: context,
       builder: (context) {
         final nameController = TextEditingController();
         return AlertDialog(
-          title: const Text('Додати групу'), // 'Add Group'
+          title: const Text('Додати теку'), // 'Add Folder'
           content: TextField(
             controller: nameController,
-            decoration: const InputDecoration(labelText: 'Назва групи'), // 'Group Name'
+            decoration: const InputDecoration(labelText: 'Назва теки'), // 'Folder Name'
           ),
           actions: [
             TextButton(
@@ -93,8 +93,8 @@ class _GroupManagementScreenState extends State<GroupManagementScreen> {
               onPressed: () async {
                 final name = nameController.text.trim();
                 if (name.isNotEmpty) {
-                  await _groupRepo.insertGroup(Group(name: name));
-                  await _loadGroupsAndUsers();
+                  await _folderRepo.insertFolder(Folder(name: name));
+                  await _loadFoldersAndUsers();
                   Navigator.of(context).pop();
                 }
               },
@@ -106,17 +106,17 @@ class _GroupManagementScreenState extends State<GroupManagementScreen> {
     );
   }
 
-  /// Displays a dialog to edit an existing group's name.
-  void _editGroup(Group group) {
+  /// Displays a dialog to edit an existing folder's name.
+  void _editFolder(Folder folder) {
     showDialog(
       context: context,
       builder: (context) {
-        final nameController = TextEditingController(text: group.name);
+        final nameController = TextEditingController(text: folder.name);
         return AlertDialog(
-          title: const Text('Редагувати групу'), // 'Edit Group'
+          title: const Text('Редагувати теку'), // 'Edit Folder'
           content: TextField(
             controller: nameController,
-            decoration: const InputDecoration(labelText: 'Назва групи'), // 'Group Name'
+            decoration: const InputDecoration(labelText: 'Назва теки'), // 'Folder Name'
           ),
           actions: [
             TextButton(
@@ -127,8 +127,8 @@ class _GroupManagementScreenState extends State<GroupManagementScreen> {
               onPressed: () async {
                 final name = nameController.text.trim();
                 if (name.isNotEmpty) {
-                  await _groupRepo.updateGroup(Group(id: group.id, name: name));
-                  await _loadGroupsAndUsers();
+                  await _folderRepo.updateFolder(Folder(id: folder.id, name: name));
+                  await _loadFoldersAndUsers();
                   Navigator.of(context).pop();
                 }
               },
@@ -149,7 +149,7 @@ class _GroupManagementScreenState extends State<GroupManagementScreen> {
         return;
       }
 
-      String csvData = await generateUserDataCSV(await _usersRepo.fetchRecordsByGroups([]));
+      String csvData = await generateUserDataCSV(await _usersRepo.fetchRecordsByFolders([]));
 
       await saveCsv(saveLocation, csvData);
 
@@ -163,21 +163,21 @@ class _GroupManagementScreenState extends State<GroupManagementScreen> {
     }
   }
 
-  // Export data for a specific group
-  void _exportGroupData(Group group) async {
+  // Export data for a specific folder
+  void _exportFolderData(Folder folder) async {
     try {
-      var saveLocation = await chooseSaveLocation("group_${group.name.replaceAll(' ', '_')}");
+      var saveLocation = await chooseSaveLocation("folder_${folder.name.replaceAll(' ', '_')}");
       if (saveLocation == null) {
         // Operation was canceled by the user.
         return;
       }
 
-      String csvData = await generateUserDataCSV(await _usersRepo.fetchRecordsByGroups([group.id!]));
+      String csvData = await generateUserDataCSV(await _usersRepo.fetchRecordsByFolders([folder.id!]));
 
       await saveCsv(saveLocation, csvData);
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Дані для групи "${group.name}" успішно експортовано до ${saveLocation.path}')),
+        SnackBar(content: Text('Дані теки "${folder.name}" успішно експортовано до ${saveLocation.path}')),
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -186,15 +186,15 @@ class _GroupManagementScreenState extends State<GroupManagementScreen> {
     }
   }
 
-  /// Deletes a group after confirmation, transferring its users to the default group.
-  void _deleteGroup(Group group) async {
+  /// Deletes a folder after confirmation, transferring its users to the default folder.
+  void _deleteFolder(Folder folder) async {
     // Confirmation dialog
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Підтвердіть видалення'), // 'Confirm Deletion'
         content: Text(
-            'Ви впевнені, що хочете видалити групу "${group.name}"?'), // 'Are you sure you want to delete the group "${group.name}"?'
+            'Ви впевнені, що хочете видалити теку "${folder.name}"?'), // 'Are you sure you want to delete the folder "${folder.name}"?'
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -209,13 +209,13 @@ class _GroupManagementScreenState extends State<GroupManagementScreen> {
     );
 
     if (confirm == true) {
-      // Transfer users to default group
-      final defaultGroup = await _groupRepo.getDefaultGroup();
-      await _usersRepo.transferUsersToDefaultGroup(group.id!, defaultGroup.id!);
+      // Transfer users to default folder
+      final defaultFolder = await _folderRepo.getDefaultFolder();
+      await _usersRepo.transferUsersToDefaultFolder(folder.id!, defaultFolder.id!);
 
-      // Delete the group
-      await _groupRepo.deleteGroup(group.id!);
-      await _loadGroupsAndUsers();
+      // Delete the folder
+      await _folderRepo.deleteFolder(folder.id!);
+      await _loadFoldersAndUsers();
     }
   }
 
@@ -225,7 +225,8 @@ class _GroupManagementScreenState extends State<GroupManagementScreen> {
       builder: (context) {
         final firstNameController = TextEditingController(text: user.firstName);
         final lastNameController = TextEditingController(text: user.lastName);
-        Group? selectedGroup = _groups.firstWhere((group) => group.id == user.groupId, orElse: () => _groups.first);
+        Folder? selectedFolder = _folders.firstWhere((folder) => folder.id == user.folderId, orElse: () => _folders.first);
+        const spacing = 8.0;
 
         return AlertDialog(
           title: const Text('Редагувати користувача'), // 'Edit User'
@@ -237,23 +238,25 @@ class _GroupManagementScreenState extends State<GroupManagementScreen> {
                   controller: firstNameController,
                   decoration: const InputDecoration(labelText: 'Ім\'я'), // 'First Name'
                 ),
+                const SizedBox(height: spacing),
                 TextField(
                   controller: lastNameController,
                   decoration: const InputDecoration(labelText: 'Прізвище'), // 'Last Name'
                 ),
-                DropdownButtonFormField<Group>(
-                  value: selectedGroup,
-                  items: _groups.map((group) {
-                    return DropdownMenuItem<Group>(
-                      value: group,
-                      child: Text(group.name),
+                const SizedBox(height: spacing),
+                DropdownButtonFormField<Folder>(
+                  value: selectedFolder,
+                  items: _folders.map((folder) {
+                    return DropdownMenuItem<Folder>(
+                      value: folder,
+                      child: Text(folder.name),
                     );
                   }).toList(),
-                  onChanged: (group) {
-                    selectedGroup = group;
+                  onChanged: (folder) {
+                    selectedFolder = folder;
                   },
                   decoration: const InputDecoration(
-                    labelText: 'Каталог', // 'Group'
+                    labelText: 'Тека', // 'Folder'
                   ),
                 ),
               ],
@@ -271,9 +274,9 @@ class _GroupManagementScreenState extends State<GroupManagementScreen> {
                 if (firstName.isNotEmpty && lastName.isNotEmpty) {
                   user.firstName = firstName;
                   user.lastName = lastName;
-                  user.groupId = selectedGroup?.id;
+                  user.folderId = selectedFolder?.id;
                   await _usersRepo.updateRecord(user);
-                  await _loadGroupsAndUsers();
+                  await _loadFoldersAndUsers();
                   if (mounted) {
                     Navigator.of(context).pop();
                   }
@@ -309,7 +312,7 @@ class _GroupManagementScreenState extends State<GroupManagementScreen> {
 
     if (confirm == true) {
       await _usersRepo.softDeleteRecord(user.id!);
-      await _loadGroupsAndUsers();
+      await _loadFoldersAndUsers();
     }
   }
 
@@ -328,7 +331,7 @@ class _GroupManagementScreenState extends State<GroupManagementScreen> {
             ),
             const SizedBox(width: 8),
             Text(
-              'Управління каталогами', // 'Group Management'
+              'Управління теками', // 'Folder Management'
               style: TextStyle(
                 color: colorScheme.onPrimary,
               ),
@@ -349,11 +352,11 @@ class _GroupManagementScreenState extends State<GroupManagementScreen> {
       ),
       body: ListView.builder(
         padding: const EdgeInsets.all(16),
-        itemCount: _groups.length,
+        itemCount: _folders.length,
         itemBuilder: (context, index) {
-          final group = _groups[index];
-          final users = _groupedUsers[group.id] ?? [];
-          final isNotDefaultGroup = group.name != GroupRepo.defaultGroupName;
+          final folder = _folders[index];
+          final users = _groupedUsers[folder.id] ?? [];
+          final isNotDefaultFolder = folder.name != FolderRepo.defaultFolderName;
           return Card(
             margin: const EdgeInsets.symmetric(vertical: 8),
             child: Theme(
@@ -366,10 +369,10 @@ class _GroupManagementScreenState extends State<GroupManagementScreen> {
                 title: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    // Group name with user count
+                    // Folder name with user count
                     RichText(
                       text: TextSpan(
-                        text: group.name,
+                        text: folder.name,
                         style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: colorScheme.onSurface),
                         children: [
                           TextSpan(
@@ -383,28 +386,28 @@ class _GroupManagementScreenState extends State<GroupManagementScreen> {
                         ],
                       ),
                     ),
-                    // Edit/Delete buttons for groups (except default group)
-                    // Actions for the group
+                    // Edit/Delete buttons for folders (except default folder)
+                    // Actions for the folder
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         PopupMenuButton<String>(
                           onSelected: (String value) {
                             if (value == 'edit') {
-                              _editGroup(group);
+                              _editFolder(folder);
                             } else if (value == 'delete') {
-                              _deleteGroup(group);
+                              _deleteFolder(folder);
                             } else if (value == 'export') {
-                              _exportGroupData(group);
+                              _exportFolderData(folder);
                             }
                           },
                           itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                            if (isNotDefaultGroup)
+                            if (isNotDefaultFolder)
                               PopupMenuItem<String>(
                                 value: 'edit',
                                 child: ListTile(
                                   leading: Icon(Icons.edit, color: colorScheme.primary),
-                                  title: const Text('Редагувати групу'), // 'Edit Group'
+                                  title: const Text('Редагувати теку'), // 'Edit folder'
                                 ),
                               ),
                             PopupMenuItem<String>(
@@ -414,12 +417,12 @@ class _GroupManagementScreenState extends State<GroupManagementScreen> {
                                 title: const Text('Експортувати дані'), // 'Export Data'
                               ),
                             ),
-                            if (isNotDefaultGroup)
+                            if (isNotDefaultFolder)
                               const PopupMenuItem<String>(
                                 value: 'delete',
                                 child: ListTile(
                                   leading: Icon(Icons.delete, color: Colors.redAccent),
-                                  title: Text('Видалити групу'), // 'Delete Group'
+                                  title: Text('Видалити теку'), // 'Delete folder'
                                 ),
                               ),
                           ],
@@ -428,7 +431,7 @@ class _GroupManagementScreenState extends State<GroupManagementScreen> {
                     ),
                   ],
                 ),
-                // Users in each group
+                // Users in each folder
                 children: users.sorted((a, b) {
                   int lastNameComparison = a.lastName.compareTo(b.lastName);
                   if (lastNameComparison != 0) return lastNameComparison;
@@ -524,7 +527,7 @@ class _GroupManagementScreenState extends State<GroupManagementScreen> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _addGroup,
+        onPressed: _addFolder,
         child: const Icon(Icons.add),
       ),
     );

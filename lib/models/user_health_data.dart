@@ -2,7 +2,7 @@ import 'health_data.dart';
 
 class UserHealthData {
   int? id;
-  int? groupId;
+  int? folderId;
   String firstName;
   String lastName;
   final HealthData healthData;
@@ -15,14 +15,14 @@ class UserHealthData {
     required this.healthData,
     required this.healthIndex,
     required this.recordedAt,
-    this.groupId,
+    this.folderId,
     this.id,
   });
 
   Map<String, Object?> toMap() {
     return {
       'id': id,
-      'group_id': groupId,
+      'folder_id': folderId,
       'first_name': firstName,
       'last_name': lastName,
       'age': healthData.age,
@@ -39,6 +39,6 @@ class UserHealthData {
 
   @override
   String toString() {
-    return 'UserHealthData{id: $id, groupId: $groupId, firstName: $firstName, lastName: $lastName, healthIndex: $healthIndex, recordedAt: $recordedAt, healthData: $healthData}';
+    return 'UserHealthData{id: $id, folderId: $folderId, firstName: $firstName, lastName: $lastName, healthIndex: $healthIndex, recordedAt: $recordedAt, healthData: $healthData}';
   }
 }
