@@ -73,7 +73,7 @@ class ResultScreen extends StatelessWidget {
                 size: 20,
               ),
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: 6),
             Expanded(
               child: Text(
                 title,
@@ -87,9 +87,9 @@ class ResultScreen extends StatelessWidget {
           ],
         ),
         if (value != null && minValue != null && maxValue != null) ...[
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
           SizedBox(
-            height: 40, // Reduce the height of the gauge
+            height: 36, // Reduce the height of the gauge
             child: _buildLinearGauge(
               value: value,
               minValue: minValue,
@@ -98,7 +98,7 @@ class ResultScreen extends StatelessWidget {
             ),
           ),
         ],
-        const SizedBox(height: 4),
+        const SizedBox(height: 2),
         Text(
           valueText,
           style: const TextStyle(
@@ -106,7 +106,7 @@ class ResultScreen extends StatelessWidget {
             color: Colors.black87,
           ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 12),
       ],
     );
   }
@@ -125,7 +125,7 @@ class ResultScreen extends StatelessWidget {
               Icons.assessment,
               color: colorScheme.onPrimary,
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: 6),
             Text(
               'Результат',
               style: TextStyle(
@@ -138,7 +138,7 @@ class ResultScreen extends StatelessWidget {
       body: SingleChildScrollView(
         child: Center(
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(12.0),
             child: Column(
               // Додаємо прокручування, якщо контент не вміщується
               mainAxisAlignment: MainAxisAlignment.center,
@@ -151,7 +151,7 @@ class ResultScreen extends StatelessWidget {
                     color: Colors.black87,
                   ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 16),
                 // Коло з індексом
                 Container(
                   width: 150,
@@ -164,7 +164,7 @@ class ResultScreen extends StatelessWidget {
                     child: Text(
                       healthIndex.index.toStringAsFixed(2),
                       style: const TextStyle(
-                        fontSize: 48,
+                        fontSize: 36,
                         fontWeight: FontWeight.bold,
                         color: Colors.white, // Текст білий для кращого контрасту
                         shadows: [
@@ -178,7 +178,7 @@ class ResultScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 18),
                 // Рівень ІФЗ
                 Text(
                   healthIndex.healthIndexLevelResult.text,
@@ -189,7 +189,7 @@ class ResultScreen extends StatelessWidget {
                   ),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 40),
+                const SizedBox(height: 30),
                 // Додаткові інтерпретації
                 Center(
                   child: ConstrainedBox(
@@ -231,7 +231,7 @@ class ResultScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-                const SizedBox(height: 40),
+                const SizedBox(height: 30),
                 ElevatedButton.icon(
                   onPressed: () {
                     Navigator.popUntil(context, (route) => route.isFirst);
@@ -239,7 +239,7 @@ class ResultScreen extends StatelessWidget {
                   icon: const Icon(Icons.home),
                   label: const Text('На головний екран'),
                   style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                    padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
                     textStyle: const TextStyle(fontSize: 18),
                     backgroundColor: colorScheme.primary,
                     foregroundColor: colorScheme.onPrimary,
