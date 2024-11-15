@@ -17,8 +17,8 @@ String? validateAge(String? value) {
     return 'Введіть вік'; // 'Please enter an age'
   }
   final age = int.tryParse(value);
-  if (age == null || age <= 0 || age < 13 || age > 100) {
-    return 'Вік повинен бути між 13 і 100 роками'; // 'Age must be between 13 and 100 years'
+  if (age == null || age <= 0 || age < 13 || age > 59) {
+    return 'Вік повинен бути між 13 і 59 роками'; // 'Age must be between 13 and 59 years'
   }
   return null;
 }
@@ -28,8 +28,8 @@ String? validateHeight(String? value) {
     return 'Введіть зріст'; // 'Please enter height'
   }
   final height = double.tryParse(value);
-  if (height == null || height <= 0 || height < 50 || height > 300) {
-    return 'Зріст повинен бути між 50 і 300 см'; // 'Height must be between 50 and 300 cm'
+  if (height == null || height <= 0 || height < 120 || height > 220) {
+    return 'Зріст повинен бути між 120 і 220 см'; // 'Height must be between 120 and 220 cm'
   }
   return null;
 }
@@ -39,8 +39,8 @@ String? validateWeight(String? value) {
     return 'Введіть вагу'; // 'Please enter weight'
   }
   final weight = double.tryParse(value);
-  if (weight == null || weight <= 0 || weight < 20 || weight > 500) {
-    return 'Вага повинна бути між 20 і 500 кг'; // 'Weight must be between 20 and 500 kg'
+  if (weight == null || weight <= 0 || weight < 30 || weight > 150) {
+    return 'Вага повинна бути між 30 і 150 кг'; // 'Weight must be between 30 and 150 kg'
   }
   return null;
 }
@@ -50,8 +50,8 @@ String? validateHeartRate(String? value) {
     return 'Введіть частоту пульсу'; // 'Please enter heart rate'
   }
   final heartRate = int.tryParse(value);
-  if (heartRate == null || heartRate <= 0 || heartRate < 30 || heartRate > 220) {
-    return 'Частота пульсу повинна бути між 30 і 220 уд./хв.'; // 'Heart rate must be between 30 and 220 bpm'
+  if (heartRate == null || heartRate <= 0 || heartRate < 40 || heartRate > 140) {
+    return 'Частота пульсу повинна бути між 40 і 140 уд./хв.'; // 'Heart rate must be between 40 and 140 bpm'
   }
   return null;
 }
@@ -61,8 +61,8 @@ String? validateSystolicBP(String? value) {
     return 'Введіть систолічний тиск'; // 'Please enter systolic BP'
   }
   final systolicBP = int.tryParse(value);
-  if (systolicBP == null || systolicBP <= 0 || systolicBP < 90 || systolicBP > 250) {
-    return 'Систолічний тиск повинен бути між 90 і 250 мм рт. ст.'; // 'Systolic BP must be between 90 and 250 mmHg'
+  if (systolicBP == null || systolicBP <= 0 || systolicBP < 80 || systolicBP > 160) {
+    return 'Систолічний тиск повинен бути між 80 і 160 мм рт. ст.'; // 'Systolic BP must be between 80 and 160 mmHg'
   }
   return null;
 }
@@ -72,8 +72,8 @@ String? validateDiastolicBP(String? value) {
     return 'Введіть діастолічний тиск'; // 'Please enter diastolic BP'
   }
   final diastolicBP = int.tryParse(value);
-  if (diastolicBP == null || diastolicBP <= 0 || diastolicBP < 60 || diastolicBP > 150) {
-    return 'Діастолічний тиск повинен бути між 60 і 150 мм рт. ст.'; // 'Diastolic BP must be between 60 and 150 mmHg'
+  if (diastolicBP == null || diastolicBP <= 0 || diastolicBP < 50 || diastolicBP > 110) {
+    return 'Діастолічний тиск повинен бути між 50 і 110 мм рт. ст.'; // 'Diastolic BP must be between 50 and 110 mmHg'
   }
   return null;
 }
@@ -83,8 +83,8 @@ String? validateActivityLevel(String? value) {
     return 'Введіть рівень рухової активності'; // 'Please enter activity level'
   }
   final diastolicBP = int.tryParse(value);
-  if (diastolicBP == null || diastolicBP <= 0 || diastolicBP < 1 || diastolicBP > 10) {
-    return 'Рівень рухової активності повинен бути між 1 та 10 балів'; // 'Activity level must be between 1 and 10 points'
+  if (diastolicBP == null || diastolicBP <= 0 || diastolicBP < 1 || diastolicBP > 7) {
+    return 'Рівень рухової активності повинен бути між 1 та 7 балів'; // 'Activity level must be between 1 and 7 points'
   }
   return null;
 }
