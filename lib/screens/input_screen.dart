@@ -210,12 +210,13 @@ class _InputScreenState extends State<InputScreen> {
   }
 
   Widget _buildCompactTextField({
-    required TextEditingController controller,
-    required String label,
-    required String hint,
-    required IconData icon,
-    required String? Function(String?) validator,
-  }) {
+      required TextEditingController controller,
+      required String label,
+      required String hint,
+      required IconData icon,
+      required String? Function(String?) validator,
+      bool allowDecimalPoint = false,
+    }) {
     return TextFormField(
       controller: controller,
       decoration: InputDecoration(
@@ -223,9 +224,15 @@ class _InputScreenState extends State<InputScreen> {
         hintText: hint,
         prefixIcon: Icon(icon),
       ),
-      keyboardType: TextInputType.number,
+      keyboardType: allowDecimalPoint
+          ? const TextInputType.numberWithOptions(decimal: true)
+          : TextInputType.number,
       inputFormatters: [
-        FilteringTextInputFormatter.digitsOnly, // Allow only numerical input
+        allowDecimalPoint
+            // Allows digits and a single decimal point
+            ? FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d*'))
+            // Allow only numerical input
+            : FilteringTextInputFormatter.digitsOnly
       ],
       validator: validator,
     );
@@ -392,6 +399,7 @@ class _InputScreenState extends State<InputScreen> {
                                   hint: 'Введіть ваш зріст (см)',
                                   icon: Icons.height,
                                   validator: validateHeight,
+                                  allowDecimalPoint: true,
                                 ),
                               ),
                               SizedBox(
@@ -402,6 +410,7 @@ class _InputScreenState extends State<InputScreen> {
                                   hint: 'Введіть вашу вагу (кг)',
                                   icon: Icons.monitor_weight,
                                   validator: validateWeight,
+                                  allowDecimalPoint: true,
                                 ),
                               ),
                               SizedBox(
