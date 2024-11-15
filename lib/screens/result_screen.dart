@@ -37,6 +37,8 @@ class ResultScreen extends StatelessWidget {
           shapeType: LinearShapePointerType.diamond,
           color: Colors.black,
           position: LinearElementPosition.cross,
+          width: 18,
+          height: 24,
         ),
       ],
       minorTicksPerInterval: 4,
