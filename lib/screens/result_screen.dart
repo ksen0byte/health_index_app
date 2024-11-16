@@ -37,8 +37,7 @@ class ResultScreen extends StatelessWidget {
           shapeType: LinearShapePointerType.diamond,
           color: Colors.black,
           position: LinearElementPosition.cross,
-          width: 18,
-          height: 24,
+          height: 20,
         ),
       ],
       minorTicksPerInterval: 4,
@@ -91,7 +90,7 @@ class ResultScreen extends StatelessWidget {
         if (value != null && minValue != null && maxValue != null) ...[
           const SizedBox(height: 6),
           SizedBox(
-            height: 36, // Reduce the height of the gauge
+            height: 50, // Reduce the height of the gauge
             child: _buildLinearGauge(
               value: value,
               minValue: minValue,
@@ -148,16 +147,16 @@ class ResultScreen extends StatelessWidget {
                 const Text(
                   'Ваш ІФЗ',
                   style: TextStyle(
-                    fontSize: 32,
+                    fontSize: 24,
                     fontWeight: FontWeight.bold,
                     color: Colors.black87,
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 12),
                 // Коло з індексом
                 Container(
-                  width: 150,
-                  height: 150,
+                  width: 120,
+                  height: 120,
                   decoration: BoxDecoration(
                     color: healthIndex.healthIndexLevelResult.color, // Використовуємо основний колір
                     shape: BoxShape.circle,
@@ -166,7 +165,7 @@ class ResultScreen extends StatelessWidget {
                     child: Text(
                       healthIndex.index.toStringAsFixed(2),
                       style: const TextStyle(
-                        fontSize: 36,
+                        fontSize: 24,
                         fontWeight: FontWeight.bold,
                         color: Colors.white, // Текст білий для кращого контрасту
                         shadows: [
@@ -180,18 +179,18 @@ class ResultScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-                const SizedBox(height: 18),
+                const SizedBox(height: 12),
                 // Рівень ІФЗ
                 Text(
                   healthIndex.healthIndexLevelResult.text,
                   style: const TextStyle(
-                    fontSize: 28,
+                    fontSize: 24,
                     fontWeight: FontWeight.w600,
                     color: Colors.black87,
                   ),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 30),
+                const SizedBox(height: 24),
                 // Додаткові інтерпретації
                 Center(
                   child: ConstrainedBox(
@@ -233,7 +232,7 @@ class ResultScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-                const SizedBox(height: 30),
+                const SizedBox(height: 24),
                 ElevatedButton.icon(
                   onPressed: () {
                     Navigator.popUntil(context, (route) => route.isFirst);
@@ -241,7 +240,7 @@ class ResultScreen extends StatelessWidget {
                   icon: const Icon(Icons.home),
                   label: const Text('На головний екран'),
                   style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
                     textStyle: const TextStyle(fontSize: 18),
                     backgroundColor: colorScheme.primary,
                     foregroundColor: colorScheme.onPrimary,
